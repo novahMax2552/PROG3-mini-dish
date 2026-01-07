@@ -23,7 +23,7 @@ public class Dish {
         return DishType;
     }
 
-    public Double getDishPrice () {
+    public Double getDishCost () {
         return ingredients.stream()
                 .mapToDouble(Ingredients::getPrice)
                 .sum();

@@ -6,13 +6,15 @@ public class Ingredients {
     private Double price;
     private CategoryEnum category;
     private Dish dish;
+    private Double requiredQuantity;
 
-    public Ingredients(int id, String name, Double price, CategoryEnum category, Dish dish) {
+    public Ingredients(int id, String name, Double price, CategoryEnum category, Dish dish, Double requiredQuantity) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.category = category;
         this.dish = dish;
+        this.requiredQuantity = requiredQuantity;
     }
 
     public String getName() {

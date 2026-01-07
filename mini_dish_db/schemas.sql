@@ -12,3 +12,5 @@ CREATE TABLE dishe (
     name VARCHAR(100) NOT NULL,
     dish_type VARCHAR(50) NOT NULL,
 )
+
+ALTER TABLE ingredients ADD COLUMN required_quantity INT NULL ;
