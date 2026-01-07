@@ -15,7 +15,7 @@ public class Main {
 
             try {
                 Double cost = dish.getDishCost();
-                System.out.println("Coût du plat: " + cost + " €");
+                System.out.println("Coût du plat: " + cost + " Ar");
             } catch (RuntimeException e) {
                 System.out.println("Erreur lors du calcul du coût: " + e.getMessage());
             }
