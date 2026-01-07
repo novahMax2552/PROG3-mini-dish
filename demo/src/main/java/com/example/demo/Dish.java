@@ -15,16 +15,24 @@ public class Dish {
         this.ingredients = ingredients;
     }
 
-    public int getId() { return id; }               // ➜ Ajout
+    public int getId() { return id; }
     public String getName() { return name; }
     public DishTypeEnum getDishType() { return DishType; }
 
-    public Double getDishCost() {
-        return ingredients.stream()
-                .mapToDouble(Ingredients::getPrice)
-                .sum();
-    }
-
-    public List<Ingredients> getIngredients() { return ingredients; } // déjà ajouté précédemment
+    public List<Ingredients> getIngredients() { return ingredients; }
     public void setIngredients(List<Ingredients> ingredients) { this.ingredients = ingredients; }
+    public Double getDishCost() {
+        double totalCost = 0.0;
+
+        for (Ingredients ing : ingredients) {
+            if (ing.getRequiredQuantity() == null) {
+                throw new RuntimeException(
+                    "Quantité nécessaire inconnue pour l’ingrédient: " + ing.getName()
+                );
+            }
+            totalCost += ing.getPrice() * ing.getRequiredQuantity();
+        }
+
+        return totalCost;
+    }
 }
