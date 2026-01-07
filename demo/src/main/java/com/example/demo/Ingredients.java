@@ -17,19 +17,19 @@ public class Ingredients {
         this.requiredQuantity = requiredQuantity;
     }
 
-    public String getName() {
-        return name;
-    }
+    // Getters existants
+    public String getName() { return name; }
+    public Double getPrice() { return price; }
+    public CategoryEnum getCategory() { return category; }
+    public String getDishName() { return dish != null ? dish.getName() : null; }
 
-    public Double getPrice() {
-        return price;
-    }
+    // ➜ Ajouts nécessaires
+    public int getId() { return id; }
 
-    public CategoryEnum getCategory() {
-        return category;
-    }
+    public Double getRequiredQuantity() { return requiredQuantity; }
+    public void setRequiredQuantity(Double requiredQuantity) { this.requiredQuantity = requiredQuantity; }
 
-    public String getDishName () {
-        return dish.getName();
-    }
+    // (optionnel) accès au Dish si besoin
+    public Dish getDish() { return dish; }
+    public void setDish(Dish dish) { this.dish = dish; }
 }

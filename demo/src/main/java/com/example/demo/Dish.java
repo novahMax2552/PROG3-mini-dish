@@ -15,13 +15,9 @@ public class Dish {
         this.ingredients = ingredients;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public DishTypeEnum getDishType() {
-        return DishType;
-    }
+    public int getId() { return id; }               // ➜ Ajout
+    public String getName() { return name; }
+    public DishTypeEnum getDishType() { return DishType; }
 
     public Double getDishCost() {
         return ingredients.stream()
@@ -29,11 +25,6 @@ public class Dish {
                 .sum();
     }
 
-    public List<Ingredients> getIngredients() {
-        return ingredients;
-    }
-
-    public void setIngredients(List<Ingredients> ingredients) {
-        this.ingredients = ingredients;
-    }
+    public List<Ingredients> getIngredients() { return ingredients; } // déjà ajouté précédemment
+    public void setIngredients(List<Ingredients> ingredients) { this.ingredients = ingredients; }
 }
