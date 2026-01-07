@@ -55,8 +55,6 @@ public class DataRetriever {
         }
         return dish;
     }
-
-    // b) Récupérer les ingrédients avec pagination
     public List<Ingredients> findIngredients(int page, int size) {
         List<Ingredients> ingredients = new ArrayList<>();
         String query = "SELECT id, name, price, category FROM ingredients LIMIT ? OFFSET ?";
@@ -84,21 +82,19 @@ public class DataRetriever {
         }
         return ingredients;
     }
-
-    // c) Créer des ingrédients avec atomicité
     public List<Ingredients> createIngredients(List<Ingredients> newIngredients) {
         List<Ingredients> created = new ArrayList<>();
         String checkQuery = "SELECT COUNT(*) FROM ingredients WHERE name = ?";
         String insertQuery = "INSERT INTO ingredients (name, price, category) VALUES (?, ?, ?) RETURNING id";
 
         try (Connection conn = dbConnection.getDBConnection()) {
-            conn.setAutoCommit(false); // début transaction
+            conn.setAutoCommit(false);
 
             try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
                  PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
 
                 for (Ingredients ing : newIngredients) {
-                    // Vérifier existence
+
                     checkStmt.setString(1, ing.getName());
                     ResultSet rs = checkStmt.executeQuery();
                     if (rs.next() && rs.getInt(1) > 0) {
@@ -106,7 +102,6 @@ public class DataRetriever {
                         throw new RuntimeException("Ingredient déjà existant: " + ing.getName());
                     }
 
-                    // Insérer
                     insertStmt.setString(1, ing.getName());
                     insertStmt.setDouble(2, ing.getPrice());
                     insertStmt.setString(3, ing.getCategory().name());
@@ -123,10 +118,10 @@ public class DataRetriever {
                     }
                 }
 
-                conn.commit(); // valider transaction
+                conn.commit();
 
             } catch (Exception e) {
-                conn.rollback(); // annuler tout si erreur
+                conn.rollback();
                 throw e;
             } finally {
                 conn.setAutoCommit(true);
@@ -138,7 +133,6 @@ public class DataRetriever {
         return created;
     }
 
-    // d) Sauvegarder un plat (insert ou update + associer/dissocier ingrédients)
     public Dish saveDish(Dish dishToSave) {
         String checkQuery = "SELECT COUNT(*) FROM dish WHERE id = ?";
         String insertQuery = "INSERT INTO dish (name, type) VALUES (?, ?) RETURNING id";
@@ -158,8 +152,6 @@ public class DataRetriever {
                  PreparedStatement assocStmt = conn.prepareStatement(insertAssoc)) {
 
                 int dishId = dishToSave.getId();
-
-                // Vérifier existence
                 checkStmt.setInt(1, dishId);
                 ResultSet rs = checkStmt.executeQuery();
                 boolean exists = rs.next() && rs.getInt(1) > 0;
@@ -176,13 +168,9 @@ public class DataRetriever {
                     updateStmt.setString(2, dishToSave.getDishType().name());
                     updateStmt.setInt(3, dishId);
                     updateStmt.executeUpdate();
-
-                    // Supprimer anciennes associations
                     deleteStmt.setInt(1, dishId);
                     deleteStmt.executeUpdate();
                 }
-
-                // Associer les nouveaux ingrédients
                 if (dishToSave.getIngredients() != null) {
                     for (Ingredients ing : dishToSave.getIngredients()) {
                         assocStmt.setInt(1, dishId);
@@ -207,8 +195,6 @@ public class DataRetriever {
         }
         return savedDish;
     }
-
-    // e) Trouver plats par nom d’ingrédient
     public List<Dish> findDishsByIngredientName(String ingredientName) {
         List<Dish> dishes = new ArrayList<>();
         String query = "SELECT DISTINCT d.id, d.name, d.type " +
@@ -238,7 +224,6 @@ public class DataRetriever {
         return dishes;
     }
 
-    // f) Recherche ingrédients par critères avec pagination
     public List<Ingredients> findIngredientsByCriteria(String ingredientName, CategoryEnum category, String dishName, int page, int size) {
         List<Ingredients> ingredients = new ArrayList<>();
         StringBuilder query = new StringBuilder(
