@@ -11,6 +11,7 @@ CREATE TABLE dish (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     dish_type VARCHAR(50) NOT NULL,
+    price numeric
 )
 
 ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS required_quantity DOUBLE PRECISION NULL;
