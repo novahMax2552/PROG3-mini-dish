@@ -11,7 +11,6 @@ public class DataRetriever {
         this.dbConnection = dbConnection;
     }
 
-    // a) Récupérer un plat par ID avec ses ingrédients
     public Dish findDishById(Integer id) {
         Dish dish = null;
         String dishQuery = "SELECT id, name, type FROM dish WHERE id = ?";
