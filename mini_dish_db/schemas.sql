@@ -7,7 +7,7 @@ CREATE TABLE ingredients (
     FOREIGN KEY (id_dish) REFERENCES dishe(id)
 )
 
-CREATE TABLE dishe (
+CREATE TABLE dish (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     dish_type VARCHAR(50) NOT NULL,
