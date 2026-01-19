@@ -4,4 +4,6 @@ CREATE DATABASE mini_dish_db;
 
 CREATE USER mini_dish_manager WITH PASSWORD '....';
 
-GRANT ALL PRIVILEGES ON DATABASE mini_dish_db TO mini_dish_user;
+GRANT ALL PRIVILEGES ON DATABASE mini_dish_db TO mini_dish_manager;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO mini_dish_manager;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO mini_dish_manager;
