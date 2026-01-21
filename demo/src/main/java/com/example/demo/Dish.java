@@ -15,12 +15,23 @@ public class Dish {
         this.ingredients = ingredients;
     }
 
-    public int getId() { return id; }
-    public String getName() { return name; }
-    public DishTypeEnum getDishType() { return DishType; }
+    public int getId() { 
+        return id; 
+    }
+    
+    public String getName() { 
+        return name; 
+    }
+    public DishTypeEnum getDishType() { 
+        return DishType; 
+    }
 
-    public List<Ingredients> getIngredients() { return ingredients; }
-    public void setIngredients(List<Ingredients> ingredients) { this.ingredients = ingredients; }
+    public List<Ingredients> getIngredients() { 
+        return ingredients; 
+    }
+    public void setIngredients(List<Ingredients> ingredients) { 
+        this.ingredients = ingredients; 
+    }
     public Double getDishCost() {
         double totalCost = 0.0;
 
