@@ -7,11 +7,13 @@ CREATE TABLE dish (
 CREATE TABLE ingredients (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    price numeric(10,2) NOT NULL,
+    price NUMERIC(10,2) NOT NULL,
     category VARCHAR(50) NOT NULL,
     id_dish INT,
     FOREIGN KEY (id_dish) REFERENCES dish(id)
 );
 
-
-ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS required_quantity DOUBLE PRECISION NULL;
+ALTER TABLE ingredients 
+ADD COLUMN IF NOT EXISTS required_quantity DOUBLE PRECISION NULL;
+ALTER TABLE ingredients 
+ADD COLUMN IF NOT EXISTS unit VARCHAR(20) NULL;
