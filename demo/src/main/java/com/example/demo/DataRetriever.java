@@ -67,7 +67,7 @@ public class DataRetriever {
             conn.setAutoCommit(false);
             try {
                 for (Ingredients ing : newIngredients) {
-                    PreparedStatement check = conn.prepareStatement("SELECT id FROM Ingredient WHERE name=?");
+                    PreparedStatement check = conn.prepareStatement("SELECT id FROM ingredient WHERE name=?");
                     check.setString(1, ing.getName());
                     ResultSet rs = check.executeQuery();
                     if (rs.next()) {
