@@ -5,6 +5,10 @@ import java.util.*;
 
 public class DataRetriever {
 
+    public DataRetriever(DBConnection dbConn) {
+        //TODO Auto-generated constructor stub
+    }
+
     public Dish findDishById(Integer id) throws SQLException {
         Dish dish = null;
         try (Connection conn = DBConnection.getDBConnection()) {
