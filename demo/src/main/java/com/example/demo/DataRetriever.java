@@ -76,8 +76,8 @@ public class DataRetriever {
                     }
                 }
                 for (Ingredients ing : newIngredients) {
-                    PreparedStatement insert = conn.prepareStatement(
-                            "INSERT INTO Ingredient(name, price, category) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                    String insertQuery = "INSERT INTO ingredients (name, price, category) VALUES (?, ?, ?::category_enum) RETURNING id";
+                    PreparedStatement insert = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
                     insert.setString(1, ing.getName());
                     insert.setDouble(2, ing.getPrice());
                     insert.setString(3, ing.getCategory().name());
@@ -164,7 +164,7 @@ public class DataRetriever {
             params.add("%" + ingredientName + "%");
         }
         if (category != null) {
-            query.append("AND i.category = ? ");
+            query.append("AND i.category = ?::category_enum ");
             params.add(category.name());
         }
         if (dishName != null) {
