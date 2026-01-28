@@ -76,7 +76,7 @@ public class DataRetriever {
                     }
                 }
                 for (Ingredients ing : newIngredients) {
-                    String insertQuery = "INSERT INTO ingredients (name, price, category) VALUES (?, ?, ?::category_enum) RETURNING id";
+                    String insertQuery = "INSERT INTO ingredient (name, price, category) VALUES (?, ?, ?::category_enum) RETURNING id";
                     PreparedStatement insert = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
                     insert.setString(1, ing.getName());
                     insert.setDouble(2, ing.getPrice());
