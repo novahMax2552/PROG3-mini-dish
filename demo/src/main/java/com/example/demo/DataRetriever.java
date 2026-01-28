@@ -62,42 +62,52 @@ public class DataRetriever {
     }
 
     public List<Ingredients> createIngredients(List<Ingredients> newIngredients) {
-        List<Ingredients> created = new ArrayList<>();
-        try (Connection conn = DBConnection.getDBConnection()) {
-            conn.setAutoCommit(false);
-            try {
+    List<Ingredients> created = new ArrayList<>();
+    try (Connection conn = DBConnection.getDBConnection()) {
+        conn.setAutoCommit(false);
+        try {
+            // Vérification des doublons
+            String checkQuery = "SELECT id FROM ingredient WHERE name = ?";
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
                 for (Ingredients ing : newIngredients) {
-                    PreparedStatement check = conn.prepareStatement("SELECT id FROM ingredient WHERE name=?");
-                    check.setString(1, ing.getName());
-                    ResultSet rs = check.executeQuery();
+                    checkStmt.setString(1, ing.getName());
+                    ResultSet rs = checkStmt.executeQuery();
                     if (rs.next()) {
                         conn.rollback();
                         throw new RuntimeException("Ingrédient déjà existant : " + ing.getName());
                     }
                 }
-                for (Ingredients ing : newIngredients) {
-                    String insertQuery = "INSERT INTO ingredient (name, price, category) VALUES (?, ?, ?::category_enum) RETURNING id";
-                    PreparedStatement insert = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
-                    insert.setString(1, ing.getName());
-                    insert.setDouble(2, ing.getPrice());
-                    insert.setString(3, ing.getCategory().name());
-                    insert.executeUpdate();
-                    ResultSet keys = insert.getGeneratedKeys();
-                    if (keys.next()) ing.setId(keys.getInt(1));
-                    created.add(ing);
-                }
-                conn.commit();
-            } catch (Exception e) {
-                conn.rollback();
-                throw e;
-            } finally {
-                conn.setAutoCommit(true);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Erreur SQL : " + e.getMessage(), e);
+
+            // Insertion
+            String insertQuery = "INSERT INTO ingredient (name, price, category) VALUES (?, ?, ?::category_enum) RETURNING id";
+            try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
+                for (Ingredients ing : newIngredients) {
+                    insertStmt.setString(1, ing.getName());
+                    insertStmt.setDouble(2, ing.getPrice());
+                    insertStmt.setString(3, ing.getCategory().name());
+
+                    ResultSet rs = insertStmt.executeQuery();
+                    if (rs.next()) {
+                        ing.setId(rs.getInt("id"));
+                        created.add(ing);
+                    }
+                }
+            }
+
+            conn.commit();
+        } catch (Exception e) {
+            conn.rollback();
+            throw e;
+        } finally {
+            conn.setAutoCommit(true);
         }
-        return created;
+    } catch (SQLException e) {
+        throw new RuntimeException("Erreur SQL : " + e.getMessage(), e);
     }
+    return created;
+}
+
 
     public Dish saveDish(Dish dish) throws SQLException {
         try (Connection conn = DBConnection.getDBConnection()) {
