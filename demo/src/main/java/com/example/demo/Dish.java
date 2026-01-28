@@ -3,47 +3,48 @@ package com.example.demo;
 import java.util.List;
 
 public class Dish {
-    private int id;
+    private Integer id;
     private String name;
-    private DishTypeEnum DishType;
-    private List<Ingredients> ingredients;
+    private DishType dishType;
+    private List<Ingredients> ingredients; // association avec les ingrédients
 
-    public Dish(int id, String name, DishTypeEnum dishType, List<Ingredients> ingredients) {
+    // --- Constructeurs ---
+    public Dish() {}
+
+    public Dish(Integer id, String name, DishType dishType) {
         this.id = id;
         this.name = name;
-        this.DishType = dishType;
+        this.dishType = dishType;
+    }
+
+    public Dish(Integer id, String name, DishType dishType, List<Ingredients> ingredients) {
+        this.id = id;
+        this.name = name;
+        this.dishType = dishType;
         this.ingredients = ingredients;
     }
 
-    public int getId() { 
-        return id; 
-    }
-    
-    public String getName() { 
-        return name; 
-    }
-    public DishTypeEnum getDishType() { 
-        return DishType; 
-    }
+    // --- Getters & Setters ---
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
-    public List<Ingredients> getIngredients() { 
-        return ingredients; 
-    }
-    public void setIngredients(List<Ingredients> ingredients) { 
-        this.ingredients = ingredients; 
-    }
-    public Double getDishCost() {
-        double totalCost = 0.0;
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-        for (Ingredients ing : ingredients) {
-            if (ing.getRequiredQuantity() == null) {
-                throw new RuntimeException(
-                    "Quantité nécessaire inconnue pour l’ingrédient: " + ing.getName()
-                );
-            }
-            totalCost += ing.getPrice() * ing.getRequiredQuantity();
-        }
+    public DishType getDishType() { return dishType; }
+    public void setDishType(DishType dishType) { this.dishType = dishType; }
 
-        return totalCost;
+    public List<Ingredients> getIngredients() { return ingredients; }
+    public void setIngredients(List<Ingredients> ingredients) { this.ingredients = ingredients; }
+
+    // --- toString ---
+    @Override
+    public String toString() {
+        return "Dish{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", dishType=" + dishType +
+                ", ingredients=" + ingredients +
+                '}';
     }
 }

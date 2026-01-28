@@ -1,50 +1,78 @@
 package com.example.demo;
 
 public class Ingredients {
-    private int id;
-    private String name;
-    private Double price;
-    private CategoryEnum category;
-    private Dish dish;
-    private Double requiredQuantity;
+    private Integer id;          // identifiant unique
+    private String name;         // nom de l’ingrédient
+    private double price;        // prix en double (NUMERIC(10,2) côté SQL)
+    private CategoryEnum category; // catégorie (VEGETABLE, ANIMAL, MARINE, DAIRY, OTHER)
+    private Integer dishId;      // id du plat associé (peut être null)
 
-    public Ingredients(int id, String name, Double price, CategoryEnum category, Dish dish, Double requiredQuantity) {
+    // --- Constructeurs ---
+    public Ingredients() {}
+
+    public Ingredients(Integer id, String name, double price, CategoryEnum category) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.category = category;
-        this.dish = dish;
-        this.requiredQuantity = requiredQuantity;
     }
 
-    public String getName() { 
-        return name; 
+    public Ingredients(Integer id, String name, double price, CategoryEnum category, Integer dishId) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.category = category;
+        this.dishId = dishId;
     }
-    public Double getPrice() { 
-        return price; 
+
+    public Integer getId() {
+        return id;
     }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
     public CategoryEnum getCategory() {
-        return category; 
-    }
-    public String getDishName() { 
-        return dish != null ? dish.getName() : null; 
+        return category;
     }
 
-    public int getId() { 
-        return id; 
+    public void setCategory(CategoryEnum category) {
+        this.category = category;
     }
 
-    public Double getRequiredQuantity() { 
-        return requiredQuantity; 
-    }
-    public void setRequiredQuantity(Double requiredQuantity) { 
-        this.requiredQuantity = requiredQuantity; 
+    public Integer getDishId() {
+        return dishId;
     }
 
-    public Dish getDish() { 
-        return dish; 
+    public void setDishId(Integer dishId) {
+        this.dishId = dishId;
     }
-    public void setDish(Dish dish) { 
-        this.dish = dish; 
+
+    @Override
+    public String toString() {
+        return "Ingredient{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", category=" + category +
+                ", dishId=" + dishId +
+                '}';
     }
 }

@@ -1,6 +1,6 @@
 package com.example.demo;
 
-public enum DishTypeEnum {
+public enum DishType {
     START,
     MAIN,
     DESSERT
