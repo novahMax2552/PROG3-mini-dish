@@ -71,26 +71,27 @@ public class DataRetriever {
             try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
                 for (Ingredients ing : newIngredients) {
                     checkStmt.setString(1, ing.getName());
-                    ResultSet rs = checkStmt.executeQuery();
-                    if (rs.next()) {
-                        conn.rollback();
-                        throw new RuntimeException("Ingrédient déjà existant : " + ing.getName());
+                    try (ResultSet rs = checkStmt.executeQuery()) {
+                        if (rs.next()) {
+                            conn.rollback();
+                            throw new RuntimeException("Ingrédient déjà existant : " + ing.getName());
+                        }
                     }
                 }
             }
-
-            // Insertion
             String insertQuery = "INSERT INTO ingredient (name, price, category) VALUES (?, ?, ?::category_enum) RETURNING id";
             try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
                 for (Ingredients ing : newIngredients) {
                     insertStmt.setString(1, ing.getName());
                     insertStmt.setDouble(2, ing.getPrice());
-                    insertStmt.setString(3, ing.getCategory().name());
+                    // Utiliser setObject pour l'enum PostgreSQL
+                    insertStmt.setObject(3, ing.getCategory().name(), java.sql.Types.OTHER);
 
-                    ResultSet rs = insertStmt.executeQuery();
-                    if (rs.next()) {
-                        ing.setId(rs.getInt("id"));
-                        created.add(ing);
+                    try (ResultSet rs = insertStmt.executeQuery()) {
+                        if (rs.next()) {
+                            ing.setId(rs.getInt("id")); // id généré par la séquence
+                            created.add(ing);
+                        }
                     }
                 }
             }
