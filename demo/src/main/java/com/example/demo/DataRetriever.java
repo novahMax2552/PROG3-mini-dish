@@ -62,53 +62,56 @@ public class DataRetriever {
     }
 
     public List<Ingredients> createIngredients(List<Ingredients> newIngredients) {
-        List<Ingredients> created = new ArrayList<>();
-        try (Connection conn = DBConnection.getDBConnection()) {
-            conn.setAutoCommit(false);
-            try {
-                // Vérification des doublons
-                String checkQuery = "SELECT id FROM ingredient WHERE name = ?";
-                try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
-                    for (Ingredients ing : newIngredients) {
-                        checkStmt.setString(1, ing.getName());
-                        try (ResultSet rs = checkStmt.executeQuery()) {
-                            if (rs.next()) {
-                                conn.rollback();
-                                throw new RuntimeException("Ingrédient déjà existant : " + ing.getName());
-                            }
+    List<Ingredients> created = new ArrayList<>();
+    try (Connection conn = DBConnection.getDBConnection()) {
+        conn.setAutoCommit(false);
+        try {
+            // Vérification et insertion
+            String checkQuery = "SELECT id FROM ingredient WHERE name = ?";
+            String insertQuery = "INSERT INTO ingredient (name, price, category) VALUES (?, ?, ?::category_enum) RETURNING id";
+
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
+                 PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
+
+                for (Ingredients ing : newIngredients) {
+                    // Vérifier si l'ingrédient existe déjà
+                    checkStmt.setString(1, ing.getName());
+                    try (ResultSet rs = checkStmt.executeQuery()) {
+                        if (rs.next()) {
+                            // Déjà existant → récupérer l'id et l'ajouter
+                            ing.setId(rs.getInt("id"));
+                            created.add(ing);
+                            continue; // passer au suivant
+                        }
+                    }
+
+                    // Sinon → insérer
+                    insertStmt.setString(1, ing.getName());
+                    insertStmt.setDouble(2, ing.getPrice());
+                    insertStmt.setObject(3, ing.getCategory().name(), java.sql.Types.OTHER);
+
+                    try (ResultSet rs = insertStmt.executeQuery()) {
+                        if (rs.next()) {
+                            ing.setId(rs.getInt("id"));
+                            created.add(ing);
                         }
                     }
                 }
-
-                // Insertion avec RETURNING id
-                String insertQuery = "INSERT INTO ingredient (name, price, category) VALUES (?, ?, ?::category_enum) RETURNING id";
-                try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
-                    for (Ingredients ing : newIngredients) {
-                        insertStmt.setString(1, ing.getName());
-                        insertStmt.setDouble(2, ing.getPrice());
-                        insertStmt.setObject(3, ing.getCategory().name(), java.sql.Types.OTHER);
-
-                        try (ResultSet rs = insertStmt.executeQuery()) {
-                            if (rs.next()) {
-                                ing.setId(rs.getInt("id"));
-                                created.add(ing);
-                            }
-                        }
-                    }
-                }
-
-                conn.commit();
-            } catch (Exception e) {
-                conn.rollback();
-                throw e;
-            } finally {
-                conn.setAutoCommit(true);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Erreur SQL : " + e.getMessage(), e);
+
+            conn.commit();
+        } catch (Exception e) {
+            conn.rollback();
+            throw e;
+        } finally {
+            conn.setAutoCommit(true);
         }
-        return created;
+    } catch (SQLException e) {
+        throw new RuntimeException("Erreur SQL : " + e.getMessage(), e);
     }
+    return created;
+}
+
 
     public Dish saveDish(Dish dish) throws SQLException {
         try (Connection conn = DBConnection.getDBConnection()) {
