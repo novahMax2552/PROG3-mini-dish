@@ -1,13 +1,12 @@
 package com.example.demo;
 
 public class Ingredients {
-    private Integer id;          // identifiant unique
-    private String name;         // nom de l’ingrédient
-    private double price;        // prix en double (NUMERIC(10,2) côté SQL)
-    private CategoryEnum category; // catégorie (VEGETABLE, ANIMAL, MARINE, DAIRY, OTHER)
-    private Integer dishId;      // id du plat associé (peut être null)
+    private Integer id;
+    private String name;
+    private double price;
+    private CategoryEnum category;
+    private Integer dishId;     
 
-    // --- Constructeurs ---
     public Ingredients() {}
 
     public Ingredients(Integer id, String name, double price, CategoryEnum category) {
