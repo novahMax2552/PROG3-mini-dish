@@ -26,7 +26,6 @@ CREATE TABLE IF NOT EXISTS dish_ingredient (
     CONSTRAINT uq_dish_ingredient UNIQUE (id_dish, id_ingredient)
 );
 
--- Création de la table des commandes
 CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
     reference VARCHAR(20) UNIQUE NOT NULL,
@@ -35,7 +34,6 @@ CREATE TABLE orders (
     total_ttc NUMERIC(12,2) NOT NULL
 );
 
--- Création de la table de liaison commande <-> plat
 CREATE TABLE dish_order (
     id SERIAL PRIMARY KEY,
     id_order INT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
@@ -43,7 +41,6 @@ CREATE TABLE dish_order (
     quantity INT NOT NULL CHECK (quantity > 0)
 );
 
--- Index pour accélérer la recherche par référence
 CREATE UNIQUE INDEX idx_orders_reference ON orders(reference);
 
 CREATE TYPE payment_status AS ENUM ('UNPAID', 'PAID');
