@@ -157,6 +157,121 @@ public class DataRetriever {
         }
         return dish;
     }
+
+    public List<Dish> findDishsByIngredientName(String ingredientName) throws SQLException {
+    List<Dish> dishes = new ArrayList<>();
+    try (Connection conn = DBConnection.getDBConnection()) {
+        PreparedStatement stmt = conn.prepareStatement(
+            "SELECT DISTINCT d.id, d.name, d.dish_type " +
+            "FROM dish d " +
+            "JOIN dish_ingredient di ON d.id = di.id_dish " +
+            "JOIN ingredient i ON di.id_ingredient = i.id " +
+            "WHERE i.name ILIKE ?");
+        stmt.setString(1, "%" + ingredientName + "%");
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            dishes.add(new Dish(
+                rs.getInt("id"),
+                rs.getString("name"),
+                DishType.valueOf(rs.getString("dish_type"))
+            ));
+        }
+    }
+    return dishes;
+}
+
+public List<Ingredients> findIngredientsByCriteria(String ingredientName, CategoryEnum category, String dishName, int page, int size) throws SQLException {
+    List<Ingredients> ingredients = new ArrayList<>();
+    StringBuilder query = new StringBuilder(
+        "SELECT i.id, i.name, i.price, i.category " +
+        "FROM ingredient i " +
+        "LEFT JOIN dish_ingredient di ON i.id = di.id_ingredient " +
+        "LEFT JOIN dish d ON di.id_dish = d.id WHERE 1=1 ");
+    List<Object> params = new ArrayList<>();
+
+    if (ingredientName != null) {
+        query.append("AND i.name ILIKE ? ");
+        params.add("%" + ingredientName + "%");
+    }
+    if (category != null) {
+        query.append("AND i.category = ?::category_enum ");
+        params.add(category.name());
+    }
+    if (dishName != null) {
+        query.append("AND d.name ILIKE ? ");
+        params.add("%" + dishName + "%");
+    }
+
+    query.append("LIMIT ? OFFSET ?");
+    params.add(size);
+    params.add((page - 1) * size);
+
+    try (Connection conn = DBConnection.getDBConnection();
+         PreparedStatement stmt = conn.prepareStatement(query.toString())) {
+        for (int i = 0; i < params.size(); i++) {
+            stmt.setObject(i + 1, params.get(i));
+        }
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            Ingredients ing = new Ingredients(
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getDouble("price"),
+                CategoryEnum.valueOf(rs.getString("category"))
+            );
+            ingredients.add(ing);
+        }
+    }
+    return ingredients;
+}
+
+public List<Ingredients> createIngredients(List<Ingredients> newIngredients) {
+    List<Ingredients> created = new ArrayList<>();
+    try (Connection conn = DBConnection.getDBConnection()) {
+        conn.setAutoCommit(false);
+        try {
+            String checkQuery = "SELECT id FROM ingredient WHERE name = ?";
+            String insertQuery = "INSERT INTO ingredient (name, price, category) VALUES (?, ?, ?::category_enum) RETURNING id";
+
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
+                 PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
+
+                for (Ingredients ing : newIngredients) {
+                    checkStmt.setString(1, ing.getName());
+                    try (ResultSet rs = checkStmt.executeQuery()) {
+                        if (rs.next()) {
+                            ing.setId(rs.getInt("id"));
+                            created.add(ing);
+                            continue;
+                        }
+                    }
+
+                    insertStmt.setString(1, ing.getName());
+                    insertStmt.setDouble(2, ing.getPrice());
+                    insertStmt.setObject(3, ing.getCategory().name(), java.sql.Types.OTHER);
+
+                    try (ResultSet rs = insertStmt.executeQuery()) {
+                        if (rs.next()) {
+                            ing.setId(rs.getInt("id"));
+                            created.add(ing);
+                        }
+                    }
+                }
+            }
+
+            conn.commit();
+        } catch (Exception e) {
+            conn.rollback();
+            throw e;
+        } finally {
+            conn.setAutoCommit(true);
+        }
+    } catch (SQLException e) {
+        throw new RuntimeException("Erreur SQL : " + e.getMessage(), e);
+    }
+    return created;
+}
+
     // ------------------- INGREDIENT & STOCK -------------------
 
     public Ingredients saveIngredient(Ingredients toSave, List<StockMovement> movements) throws SQLException {

@@ -9,6 +9,7 @@ public class Dish {
     private Double sellingPrice;
     private List<Ingredients> ingredients;
 
+    // Constructeur de base (sans ingrédients)
     public Dish(Integer id, String name, DishType dishType, Double sellingPrice) {
         this.id = id;
         this.name = name;
@@ -16,8 +17,22 @@ public class Dish {
         this.sellingPrice = sellingPrice;
     }
 
-    public Dish(Integer id, String name, DishType dishType) {
-        this(id, name, dishType, null);
+    // Constructeur avec ingrédients et prix de vente
+    public Dish(Integer id, String name, DishType dishType, List<Ingredients> ingredients, Double sellingPrice) {
+        this.id = id;
+        this.name = name;
+        this.dishType = dishType;
+        this.ingredients = ingredients;
+        this.sellingPrice = sellingPrice;
+    }
+
+    // Constructeur avec ingrédients mais sans prix de vente
+    public Dish(Integer id, String name, DishType dishType, List<Ingredients> ingredients) {
+        this.id = id;
+        this.name = name;
+        this.dishType = dishType;
+        this.ingredients = ingredients;
+        this.sellingPrice = null;
     }
 
     // Getters & setters
@@ -35,6 +50,25 @@ public class Dish {
 
     public List<Ingredients> getIngredients() { return ingredients; }
     public void setIngredients(List<Ingredients> ingredients) { this.ingredients = ingredients; }
+
+    // Calcul du coût du plat (simplifié : somme des prix des ingrédients)
+    public double getDishCost() {
+        double total = 0.0;
+        if (ingredients != null) {
+            for (Ingredients ing : ingredients) {
+                total += ing.getPrice();
+            }
+        }
+        return total;
+    }
+
+    // Calcul de la marge brute
+    public double getGrossMargin() {
+        if (sellingPrice == null) {
+            throw new RuntimeException("Prix de vente non défini");
+        }
+        return sellingPrice - getDishCost();
+    }
 
     @Override
     public String toString() {

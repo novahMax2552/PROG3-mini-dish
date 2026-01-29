@@ -4,8 +4,7 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        DBConnection dbConn = new DBConnection();
-        DataRetriever retriever = new DataRetriever(dbConn);
+        DataRetriever retriever = new DataRetriever();
 
         try {
             Dish dishA = retriever.findDishById(1);
@@ -45,7 +44,6 @@ public class Main {
 
             Dish soupe = new Dish(null, "Soupe de légumes", DishType.START,
                 Arrays.asList(new Ingredients(null, "Oignon", 500.0, CategoryEnum.VEGETABLE)));
-            soupe.getIngredients().get(0).setRequiredQuantity(1.0); // ⚡ quantité fixée
             soupe = retriever.saveDish(soupe);
             System.out.println("Test k) : " + soupe);
             System.out.println("Coût soupe : " + soupe.getDishCost());
@@ -57,17 +55,12 @@ public class Main {
                     new Ingredients(null, "Tomate", 600.0, CategoryEnum.VEGETABLE),
                     new Ingredients(null, "Fromage", 1200.0, CategoryEnum.DAIRY)
                 ));
-            salade.getIngredients().get(0).setRequiredQuantity(1.0);
-            salade.getIngredients().get(1).setRequiredQuantity(1.0);
-            salade.getIngredients().get(2).setRequiredQuantity(2.0);
-            salade.getIngredients().get(3).setRequiredQuantity(0.5);
             salade = retriever.saveDish(salade);
             System.out.println("Test l) : " + salade);
             System.out.println("Coût salade : " + salade.getDishCost());
 
             Dish saladeFromage = new Dish(1, "Salade de fromage", DishType.START,
                 Arrays.asList(new Ingredients(null, "Fromage", 1200.0, CategoryEnum.DAIRY)));
-            saladeFromage.getIngredients().get(0).setRequiredQuantity(1.0);
             saladeFromage = retriever.saveDish(saladeFromage);
             System.out.println("Test m) : " + saladeFromage);
             System.out.println("Coût salade fromage : " + saladeFromage.getDishCost());
