@@ -9,9 +9,9 @@ public class DishTest {
     @Test
     public void testGetDishCost_SaladeFraiche() {
         Ingredients laitue = new Ingredients(null, "Laitue", 800.0, CategoryEnum.VEGETABLE);
-        laitue.setRequiredQuantity(0.20); // 0.20 KG
+        laitue.setRequiredQuantity(0.20);
         Ingredients tomate = new Ingredients(null, "Tomate", 600.0, CategoryEnum.VEGETABLE);
-        tomate.setRequiredQuantity(0.15); // 0.15 KG
+        tomate.setRequiredQuantity(0.15);
 
         Dish saladeFraiche = new Dish(1, "Salade fraîche", DishType.START,
                 Arrays.asList(laitue, tomate), 3500.00);

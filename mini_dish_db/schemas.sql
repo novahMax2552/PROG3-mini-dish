@@ -2,6 +2,17 @@ CREATE TYPE category_enum AS ENUM ('VEGETABLE', 'ANIMAL', 'MARINE', 'DAIRY', 'OT
 
 CREATE TYPE dish_type_enum AS ENUM ('START', 'MAIN', 'DESSERT');
 
+CREATE TYPE movement_type AS ENUM ('IN', 'OUT');
+
+CREATE TABLE stock_movement (
+    id SERIAL PRIMARY KEY,
+    id_ingredient INT NOT NULL REFERENCES ingredient(id) ON DELETE CASCADE,
+    quantity NUMERIC NOT NULL CHECK (quantity >= 0),
+    type movement_type NOT NULL,
+    unit unit_type NOT NULL,
+    creation_datetime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE Dish (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
