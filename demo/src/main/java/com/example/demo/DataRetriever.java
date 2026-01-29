@@ -137,6 +137,7 @@ public class DataRetriever {
     try (Connection conn = DBConnection.getDBConnection()) {
         conn.setAutoCommit(false);
         try {
+            // 1. Insérer ou mettre à jour le plat
             if (dish.getId() == null) {
                 String insertQuery = "INSERT INTO dish(name, dish_type, selling_price) VALUES (?, ?::dish_type_enum, ?) RETURNING id";
                 try (PreparedStatement insert = conn.prepareStatement(insertQuery)) {
@@ -169,15 +170,47 @@ public class DataRetriever {
                 }
             }
 
+            // 2. Supprimer les anciennes liaisons
             String clearQuery = "DELETE FROM dish_ingredient WHERE id_dish=?";
             try (PreparedStatement clear = conn.prepareStatement(clearQuery)) {
                 clear.setInt(1, dish.getId());
                 clear.executeUpdate();
             }
 
+            // 3. Insérer les nouvelles liaisons
             String linkQuery = "INSERT INTO dish_ingredient(id_dish, id_ingredient, quantity_required, unit) VALUES (?, ?, ?, ?::unit_type)";
             try (PreparedStatement link = conn.prepareStatement(linkQuery)) {
                 for (Ingredients ing : dish.getIngredients()) {
+
+                    // Vérifier si l’ingrédient existe déjà par son nom
+                    if (ing.getId() == null) {
+                        String checkIngredient = "SELECT id FROM ingredient WHERE name = ?";
+                        try (PreparedStatement checkIng = conn.prepareStatement(checkIngredient)) {
+                            checkIng.setString(1, ing.getName());
+                            try (ResultSet rsCheck = checkIng.executeQuery()) {
+                                if (rsCheck.next()) {
+                                    // L’ingrédient existe déjà → récupérer son ID
+                                    ing.setId(rsCheck.getInt("id"));
+                                } else {
+                                    // L’ingrédient n’existe pas → insérer
+                                    String insertIngredient = "INSERT INTO ingredient(name, price, category) VALUES (?, ?, ?::category_enum) RETURNING id";
+                                    try (PreparedStatement insertIng = conn.prepareStatement(insertIngredient)) {
+                                        insertIng.setString(1, ing.getName());
+                                        insertIng.setDouble(2, ing.getPrice());
+                                        insertIng.setObject(3, ing.getCategory().name(), java.sql.Types.OTHER);
+
+                                        try (ResultSet rsIng = insertIng.executeQuery()) {
+                                            if (rsIng.next()) {
+                                                ing.setId(rsIng.getInt("id"));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Créer la liaison dans dish_ingredient
                     link.setInt(1, dish.getId());
                     link.setInt(2, ing.getId());
                     if (ing.getRequiredQuantity() != null) {
@@ -185,6 +218,7 @@ public class DataRetriever {
                     } else {
                         link.setNull(3, java.sql.Types.NUMERIC);
                     }
+                    // ⚠️ Ici, adapte selon ton modèle : "KG", "PCS", "L"
                     link.setString(4, "KG");
                     link.executeUpdate();
                 }
@@ -200,6 +234,8 @@ public class DataRetriever {
     }
     return dish;
 }
+
+
 
 
     public List<Dish> findDishsByIngredientName(String ingredientName) throws SQLException {
