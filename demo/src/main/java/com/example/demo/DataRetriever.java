@@ -56,27 +56,31 @@ public class DataRetriever {
 
 
     public List<Ingredients> findIngredients(int page, int size) throws SQLException {
-        List<Ingredients> ingredients = new ArrayList<>();
-        try (Connection conn = DBConnection.getDBConnection()) {
-            PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT * FROM ingredient ORDER BY id LIMIT ? OFFSET ?");
-            stmt.setInt(1, size);
-            stmt.setInt(2, (page - 1) * size);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Ingredients ing = new Ingredients(
-                        rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getDouble("price"),
-                        CategoryEnum.valueOf(rs.getString("category")),
-                        rs.getInt("id_dish")
-                );
-                ing.setRequiredQuantity(rs.getObject("required_quantity") != null ? rs.getDouble("required_quantity") : null);
-                ingredients.add(ing);
-            }
+    List<Ingredients> ingredients = new ArrayList<>();
+    try (Connection conn = DBConnection.getDBConnection()) {
+        PreparedStatement stmt = conn.prepareStatement(
+            "SELECT i.id, i.name, i.price, i.category, di.id_dish, di.quantity_required " +
+            "FROM ingredient i " +
+            "LEFT JOIN dish_ingredient di ON i.id = di.id_ingredient " +
+            "ORDER BY i.id LIMIT ? OFFSET ?");
+        stmt.setInt(1, size);
+        stmt.setInt(2, (page - 1) * size);
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            Ingredients ing = new Ingredients(
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getDouble("price"),
+                CategoryEnum.valueOf(rs.getString("category"))
+            );
+            ing.setDishId(rs.getObject("id_dish") != null ? rs.getInt("id_dish") : null);
+            ing.setRequiredQuantity(rs.getObject("quantity_required") != null ? rs.getDouble("quantity_required") : null);
+            ingredients.add(ing);
         }
-        return ingredients;
     }
+    return ingredients;
+}
+
 
     public List<Ingredients> createIngredients(List<Ingredients> newIngredients) {
         List<Ingredients> created = new ArrayList<>();
@@ -199,67 +203,72 @@ public class DataRetriever {
 
 
     public List<Dish> findDishsByIngredientName(String ingredientName) throws SQLException {
-        List<Dish> dishes = new ArrayList<>();
-        try (Connection conn = DBConnection.getDBConnection()) {
-            PreparedStatement stmt = conn.prepareStatement(
-                "SELECT DISTINCT d.id, d.name, d.dish_type " +
-                "FROM dish d JOIN ingredient i ON d.id=i.id_dish " +
-                "WHERE i.name ILIKE ?");
-            stmt.setString(1, "%" + ingredientName + "%");
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                dishes.add(new Dish(
-                    rs.getInt("id"),
-                    rs.getString("name"),
-                    DishType.valueOf(rs.getString("dish_type"))
-                ));
-            }
+    List<Dish> dishes = new ArrayList<>();
+    try (Connection conn = DBConnection.getDBConnection()) {
+        PreparedStatement stmt = conn.prepareStatement(
+            "SELECT DISTINCT d.id, d.name, d.dish_type " +
+            "FROM dish d " +
+            "JOIN dish_ingredient di ON d.id = di.id_dish " +
+            "JOIN ingredient i ON di.id_ingredient = i.id " +
+            "WHERE i.name ILIKE ?");
+        stmt.setString(1, "%" + ingredientName + "%");
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            dishes.add(new Dish(
+                rs.getInt("id"),
+                rs.getString("name"),
+                DishType.valueOf(rs.getString("dish_type"))
+            ));
         }
-        return dishes;
     }
+    return dishes;
+}
+
 
     public List<Ingredients> findIngredientsByCriteria(String ingredientName, CategoryEnum category, String dishName, int page, int size) throws SQLException {
-        List<Ingredients> ingredients = new ArrayList<>();
-        StringBuilder query = new StringBuilder(
-            "SELECT i.id, i.name, i.price, i.category, i.id_dish, i.required_quantity " +
-            "FROM ingredient i LEFT JOIN dish d ON i.id_dish = d.id WHERE 1=1 ");
-        List<Object> params = new ArrayList<>();
+    List<Ingredients> ingredients = new ArrayList<>();
+    StringBuilder query = new StringBuilder(
+        "SELECT i.id, i.name, i.price, i.category, di.id_dish, di.quantity_required " +
+        "FROM ingredient i " +
+        "LEFT JOIN dish_ingredient di ON i.id = di.id_ingredient " +
+        "LEFT JOIN dish d ON di.id_dish = d.id WHERE 1=1 ");
+    List<Object> params = new ArrayList<>();
 
-        if (ingredientName != null) {
-            query.append("AND i.name ILIKE ? ");
-            params.add("%" + ingredientName + "%");
-        }
-        if (category != null) {
-            query.append("AND i.category = ?::category_enum ");
-            params.add(category.name());
-        }
-        if (dishName != null) {
-            query.append("AND d.name ILIKE ? ");
-            params.add("%" + dishName + "%");
-        }
-
-        query.append("LIMIT ? OFFSET ?");
-        params.add(size);
-        params.add((page - 1) * size);
-
-        try (Connection conn = DBConnection.getDBConnection();
-             PreparedStatement stmt = conn.prepareStatement(query.toString())) {
-            for (int i = 0; i < params.size(); i++) {
-                stmt.setObject(i + 1, params.get(i));
-            }
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Ingredients ing = new Ingredients(
-                    rs.getInt("id"),
-                    rs.getString("name"),
-                    rs.getDouble("price"),
-                    CategoryEnum.valueOf(rs.getString("category")),
-                    rs.getInt("id_dish")
-                );
-                ing.setRequiredQuantity(rs.getObject("required_quantity") != null ? rs.getDouble("required_quantity") : null);
-                ingredients.add(ing);
-            }
-        }
-        return ingredients;
+    if (ingredientName != null) {
+        query.append("AND i.name ILIKE ? ");
+        params.add("%" + ingredientName + "%");
     }
+    if (category != null) {
+        query.append("AND i.category = ?::category_enum ");
+        params.add(category.name());
+    }
+    if (dishName != null) {
+        query.append("AND d.name ILIKE ? ");
+        params.add("%" + dishName + "%");
+    }
+
+    query.append("LIMIT ? OFFSET ?");
+    params.add(size);
+    params.add((page - 1) * size);
+
+    try (Connection conn = DBConnection.getDBConnection();
+         PreparedStatement stmt = conn.prepareStatement(query.toString())) {
+        for (int i = 0; i < params.size(); i++) {
+            stmt.setObject(i + 1, params.get(i));
+        }
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            Ingredients ing = new Ingredients(
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getDouble("price"),
+                CategoryEnum.valueOf(rs.getString("category"))
+            );
+            ing.setDishId(rs.getObject("id_dish") != null ? rs.getInt("id_dish") : null);
+            ing.setRequiredQuantity(rs.getObject("quantity_required") != null ? rs.getDouble("quantity_required") : null);
+            ingredients.add(ing);
+        }
+    }
+    return ingredients;
+}
 }
