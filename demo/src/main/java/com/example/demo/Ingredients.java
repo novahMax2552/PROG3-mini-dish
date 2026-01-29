@@ -1,5 +1,8 @@
 package com.example.demo;
 
+import java.time.Instant;
+import java.util.List;
+
 public class Ingredients {
     private Integer id;
     private String name;
@@ -7,6 +10,7 @@ public class Ingredients {
     private Double requiredQuantity;
     private CategoryEnum category;
     private Integer dishId;     
+    private List<StockMovement> stockMovements;
 
     public Ingredients() {}
 
@@ -15,6 +19,7 @@ public class Ingredients {
         this.name = name;
         this.price = price;
         this.category = category;
+        this.requiredQuantity = null;
     }
 
     public Ingredients(Integer id, String name, double price, CategoryEnum category, Integer dishId) {
@@ -23,6 +28,20 @@ public class Ingredients {
         this.price = price;
         this.category = category;
         this.dishId = dishId;
+    }
+
+    public Ingredients(Integer id, String name, double price, CategoryEnum category, Integer dishId, List<StockMovement> stockMovements) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.category = category;
+        this.dishId = dishId;
+        this.stockMovements = stockMovements;
+    }
+
+
+    public List<StockMovement> getStockMovements() {
+        return stockMovements;
     }
 
     public Integer getId() {
@@ -72,6 +91,14 @@ public class Ingredients {
     public Double getRequiredQuantity() {
         return requiredQuantity;
     }
+
+    public StockValue getStockValueAt(Instant instant) { 
+        double total = 0.0; for (StockMovement movement : stockMovements) { 
+            if (!movement.getCreationDatetime().isAfter(instant)) { 
+                total += movement.getType() == MovementTypeEnum.IN ? movement.getValue().getQuantity() : -movement.getValue().getQuantity();
+             } } 
+             return new StockValue(total, UnitType.KG); 
+            }
     
     @Override
     public String toString() {

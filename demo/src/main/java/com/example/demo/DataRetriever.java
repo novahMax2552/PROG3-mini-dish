@@ -306,5 +306,60 @@ public class DataRetriever {
         }
     }
     return ingredients;
+    }
+    public Ingredients saveIngredient(Ingredients toSave) throws SQLException {
+    try (Connection conn = DBConnection.getDBConnection()) {
+        conn.setAutoCommit(false);
+        try {
+            if (toSave.getId() == null) {
+                String checkQuery = "SELECT id FROM ingredient WHERE name = ?";
+                try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
+                    checkStmt.setString(1, toSave.getName());
+                    try (ResultSet rs = checkStmt.executeQuery()) {
+                        if (rs.next()) {
+                            toSave.setId(rs.getInt("id"));
+                        } else {
+                            String insertQuery = "INSERT INTO ingredient(name, price, category) VALUES (?, ?, ?::category_enum) RETURNING id";
+                            try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
+                                insertStmt.setString(1, toSave.getName());
+                                insertStmt.setDouble(2, toSave.getPrice());
+                                insertStmt.setObject(3, toSave.getCategory().name(), java.sql.Types.OTHER);
+                                try (ResultSet rsInsert = insertStmt.executeQuery()) {
+                                    if (rsInsert.next()) {
+                                        toSave.setId(rsInsert.getInt("id"));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            String insertMovement = "INSERT INTO stock_movement(id, id_ingredient, quantity, type, unit, creation_datetime) " +
+                                    "VALUES (?, ?, ?, ?::movement_type, ?::unit_type, ?) ON CONFLICT DO NOTHING";
+            try (PreparedStatement movementStmt = conn.prepareStatement(insertMovement)) {
+                for (StockMovement movement : toSave.getStockMovements()) {
+                    if (movement.getId() != null) {
+                        movementStmt.setInt(1, movement.getId());
+                        movementStmt.setInt(2, toSave.getId());
+                        movementStmt.setDouble(3, movement.getValue().getQuantity());
+                        movementStmt.setString(4, movement.getType().name());
+                        movementStmt.setString(5, movement.getValue().getUnit().name());
+                        movementStmt.setTimestamp(6, Timestamp.from(movement.getCreationDatetime()));
+                        movementStmt.executeUpdate();
+                    }
+                }
+            }
+
+            conn.commit();
+        } catch (Exception e) {
+            conn.rollback();
+            throw e;
+        } finally {
+            conn.setAutoCommit(true);
+        }
+    }
+    return toSave;
 }
+
 }
