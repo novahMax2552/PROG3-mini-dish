@@ -35,6 +35,15 @@ public class Dish {
         this.sellingPrice = null;
     }
 
+    public Dish(Integer id, String name, DishType dishType) {
+        this.id = id;
+        this.name = name;
+        this.dishType = dishType;
+        this.sellingPrice = null;
+        this.ingredients = null;
+    }
+
+
     // Getters & setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
