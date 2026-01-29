@@ -15,3 +15,6 @@ CREATE TABLE Ingredient (
     category category_enum NOT NULL,
     id_dish INT REFERENCES Dish(id) ON DELETE SET NULL
 );
+
+ALTER TABLE ingredient
+ADD COLUMN IF NOT EXISTS required_quantity DOUBLE PRECISION NULL;

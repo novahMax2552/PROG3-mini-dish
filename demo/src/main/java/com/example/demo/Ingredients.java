@@ -4,6 +4,7 @@ public class Ingredients {
     private Integer id;
     private String name;
     private double price;
+    private Double requiredQuantity;
     private CategoryEnum category;
     private Integer dishId;     
 
@@ -64,6 +65,14 @@ public class Ingredients {
         this.dishId = dishId;
     }
 
+    public void setRequiredQuantity(Double requiredQuantity) {
+        this.requiredQuantity = requiredQuantity;
+    }
+    
+    public Double getRequiredQuantity() {
+        return requiredQuantity;
+    }
+    
     @Override
     public String toString() {
         return "Ingredient{" +
@@ -74,4 +83,5 @@ public class Ingredients {
                 ", dishId=" + dishId +
                 '}';
     }
+
 }

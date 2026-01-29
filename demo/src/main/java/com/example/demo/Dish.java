@@ -6,9 +6,8 @@ public class Dish {
     private Integer id;
     private String name;
     private DishType dishType;
-    private List<Ingredients> ingredients; // association avec les ingrédients
+    private List<Ingredients> ingredients;
 
-    // --- Constructeurs ---
     public Dish() {}
 
     public Dish(Integer id, String name, DishType dishType) {
@@ -24,20 +23,48 @@ public class Dish {
         this.ingredients = ingredients;
     }
 
-    // --- Getters & Setters ---
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() { 
+        return name; 
+    }
+    
+    public void setName(String name) { 
+        this.name = name; 
+    }
 
-    public DishType getDishType() { return dishType; }
-    public void setDishType(DishType dishType) { this.dishType = dishType; }
+    public DishType getDishType() { 
+        return dishType; 
+    }
 
-    public List<Ingredients> getIngredients() { return ingredients; }
-    public void setIngredients(List<Ingredients> ingredients) { this.ingredients = ingredients; }
+    public void setDishType(DishType dishType) { 
+        this.dishType = dishType; 
+    }
 
-    // --- toString ---
+    public List<Ingredients> getIngredients() { 
+        return ingredients; 
+    }
+
+    public void setIngredients(List<Ingredients> ingredients) { 
+        this.ingredients = ingredients; 
+    }
+
+    public Double getDishCost() {
+    if (ingredients == null || ingredients.isEmpty()) {
+        return 0.0;
+    }
+    double total = 0.0;
+    for (Ingredients ing : ingredients) {
+        if (ing.getRequiredQuantity() == null) {
+            throw new RuntimeException("Quantité nécessaire inconnue pour l'ingrédient : " + ing.getName());
+        }
+        total += ing.getPrice() * ing.getRequiredQuantity();
+    }
+    return total;
+}
+
+
     @Override
     public String toString() {
         return "Dish{" +
