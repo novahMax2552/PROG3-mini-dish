@@ -6,6 +6,7 @@ public class Dish {
     private Integer id;
     private String name;
     private DishType dishType;
+    private Double sellingPrice;
     private List<Ingredients> ingredients;
 
     public Dish() {}
@@ -23,13 +24,21 @@ public class Dish {
         this.ingredients = ingredients;
     }
 
+    public Dish(Integer id, String name, DishType dishType, Double sellingPrice) {
+        this.id = id;
+        this.name = name;
+        this.dishType = dishType;
+        this.sellingPrice = sellingPrice;
+    }
+
+
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
     public String getName() { 
         return name; 
     }
-    
+
     public void setName(String name) { 
         this.name = name; 
     }
@@ -63,6 +72,12 @@ public class Dish {
     }
     return total;
 }
+    public Double getSellingPrice() {
+        return sellingPrice;
+    }
+    public void setSellingPrice(Double sellingPrice) {
+        this.sellingPrice = sellingPrice;
+    }
 
 
     @Override
