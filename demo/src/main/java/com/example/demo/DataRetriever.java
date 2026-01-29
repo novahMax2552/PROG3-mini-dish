@@ -370,5 +370,116 @@ public List<Ingredients> createIngredients(List<Ingredients> newIngredients) {
         }
         return movements;
     }
+    public Order saveOrder(Order orderToSave) throws SQLException {
+    try (Connection conn = DBConnection.getDBConnection()) {
+        conn.setAutoCommit(false);
+        try {
+            // Vérification des stocks
+            for (DishOrder dishOrder : orderToSave.getDishOrders()) {
+                Dish dish = dishOrder.getDish();
+                for (Ingredients ing : dish.getIngredients()) {
+                    StockValue stock = getStockValueAt(ing.getId(), Instant.now());
+                    double required = dishOrder.getQuantity(); // simplifié : 1 unité par plat
+                    if (stock.getQuantity() < required) {
+                        throw new RuntimeException("Stock insuffisant pour l’ingrédient : " + ing.getName());
+                    }
+                }
+            }
+
+            // Génération de la référence
+            String refQuery = "SELECT COUNT(*) FROM orders";
+            int count = 0;
+            try (PreparedStatement stmt = conn.prepareStatement(refQuery);
+                 ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) count = rs.getInt(1);
+            }
+            String reference = String.format("ORD%05d", count + 1);
+            orderToSave.setReference(reference);
+
+            // Calcul des montants
+            double totalHT = orderToSave.getTotalAmountWithoutVAT();
+            double totalTTC = orderToSave.getTotalAmountWithVAT();
+
+            // Insertion de la commande
+            String insertOrder = "INSERT INTO orders(reference, creation_datetime, total_ht, total_ttc) VALUES (?, ?, ?, ?) RETURNING id";
+            try (PreparedStatement stmt = conn.prepareStatement(insertOrder)) {
+                stmt.setString(1, orderToSave.getReference());
+                stmt.setTimestamp(2, Timestamp.from(orderToSave.getCreationDatetime()));
+                stmt.setDouble(3, totalHT);
+                stmt.setDouble(4, totalTTC);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        orderToSave.setId(rs.getInt("id"));
+                    }
+                }
+            }
+
+            // Insertion des plats commandés
+            String insertDishOrder = "INSERT INTO dish_order(id_order, id_dish, quantity) VALUES (?, ?, ?)";
+            try (PreparedStatement stmt = conn.prepareStatement(insertDishOrder)) {
+                for (DishOrder dishOrder : orderToSave.getDishOrders()) {
+                    stmt.setInt(1, orderToSave.getId());
+                    stmt.setInt(2, dishOrder.getDish().getId());
+                    stmt.setInt(3, dishOrder.getQuantity());
+                    stmt.executeUpdate();
+                }
+            }
+
+            conn.commit();
+        } catch (Exception e) {
+            conn.rollback();
+            throw e;
+        } finally {
+            conn.setAutoCommit(true);
+        }
+    }
+    return orderToSave;
+}
+public Order findOrderByReference(String reference) throws SQLException {
+    Order order = null;
+    try (Connection conn = DBConnection.getDBConnection()) {
+        String query = "SELECT id, reference, creation_datetime, total_ht, total_ttc FROM orders WHERE reference = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, reference);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int orderId = rs.getInt("id");
+                    order = new Order(
+                        orderId,
+                        rs.getString("reference"),
+                        rs.getTimestamp("creation_datetime").toInstant(),
+                        rs.getDouble("total_ht"),
+                        rs.getDouble("total_ttc"),
+                        findDishOrdersByOrderId(orderId, conn)
+                    );
+                } else {
+                    throw new RuntimeException("Commande introuvable avec référence : " + reference);
+                }
+            }
+        }
+    }
+    return order;
+}
+
+private List<DishOrder> findDishOrdersByOrderId(int orderId, Connection conn) throws SQLException {
+    List<DishOrder> dishOrders = new ArrayList<>();
+    String query = "SELECT id, id_dish, quantity FROM dish_order WHERE id_order = ?";
+    try (PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setInt(1, orderId);
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Dish dish = findDishById(rs.getInt("id_dish")); // réutilise ta méthode existante
+                DishOrder dishOrder = new DishOrder(
+                    rs.getInt("id"),
+                    dish,
+                    rs.getInt("quantity")
+                );
+                dishOrders.add(dishOrder);
+            }
+        }
+    }
+    return dishOrders;
+}
+
 }
 

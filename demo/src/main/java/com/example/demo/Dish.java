@@ -6,18 +6,10 @@ public class Dish {
     private Integer id;
     private String name;
     private DishType dishType;
-    private Double sellingPrice;
+    private Double sellingPrice;   // ⚡ on garde sellingPrice
     private List<Ingredients> ingredients;
 
-    // Constructeur de base (sans ingrédients)
-    public Dish(Integer id, String name, DishType dishType, Double sellingPrice) {
-        this.id = id;
-        this.name = name;
-        this.dishType = dishType;
-        this.sellingPrice = sellingPrice;
-    }
-
-    // Constructeur avec ingrédients et prix de vente
+    // Constructeur complet
     public Dish(Integer id, String name, DishType dishType, List<Ingredients> ingredients, Double sellingPrice) {
         this.id = id;
         this.name = name;
@@ -26,23 +18,20 @@ public class Dish {
         this.sellingPrice = sellingPrice;
     }
 
-    // Constructeur avec ingrédients mais sans prix de vente
+    // Constructeur avec ingrédients mais sans prix
     public Dish(Integer id, String name, DishType dishType, List<Ingredients> ingredients) {
-        this.id = id;
-        this.name = name;
-        this.dishType = dishType;
-        this.ingredients = ingredients;
-        this.sellingPrice = null;
+        this(id, name, dishType, ingredients, null);
     }
 
+    // Constructeur avec prix mais sans ingrédients
+    public Dish(Integer id, String name, DishType dishType, Double sellingPrice) {
+        this(id, name, dishType, null, sellingPrice);
+    }
+
+    // Constructeur minimal
     public Dish(Integer id, String name, DishType dishType) {
-        this.id = id;
-        this.name = name;
-        this.dishType = dishType;
-        this.sellingPrice = null;
-        this.ingredients = null;
+        this(id, name, dishType, null, null);
     }
-
 
     // Getters & setters
     public Integer getId() { return id; }
