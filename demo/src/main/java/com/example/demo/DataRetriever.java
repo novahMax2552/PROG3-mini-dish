@@ -10,35 +10,36 @@ public class DataRetriever {
     }
 
     public Dish findDishById(Integer id) throws SQLException {
-        Dish dish = null;
-        try (Connection conn = DBConnection.getDBConnection()) {
-            PreparedStatement stmt = conn.prepareStatement("SELECT id, name, dish_type FROM dish WHERE id=?");
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                dish = new Dish(rs.getInt("id"), rs.getString("name"),
-                        DishType.valueOf(rs.getString("dish_type")));
-            }
-
-            if (dish != null) {
-                PreparedStatement stmtIng = conn.prepareStatement("SELECT * FROM ingredient WHERE id_dish=?");
-                stmtIng.setInt(1, id);
-                ResultSet rsIng = stmtIng.executeQuery();
-                List<Ingredients> ingredients = new ArrayList<>();
-                while (rsIng.next()) {
-                    ingredients.add(new Ingredients(
-                            rsIng.getInt("id"),
-                            rsIng.getString("name"),
-                            rsIng.getDouble("price"),
-                            CategoryEnum.valueOf(rsIng.getString("category")),
-                            rsIng.getInt("id_dish")
-                    ));
-                }
-                dish.setIngredients(ingredients);
-            }
+    Dish dish = null;
+    try (Connection conn = DBConnection.getDBConnection()) {
+        PreparedStatement stmt = conn.prepareStatement("SELECT id, name, dish_type FROM dish WHERE id=?");
+        stmt.setInt(1, id);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            dish = new Dish(rs.getInt("id"), rs.getString("name"),
+                    DishType.valueOf(rs.getString("dish_type")));
+        } else {
+            throw new RuntimeException("Plat introuvable avec id=" + id);
         }
-        return dish;
+
+        PreparedStatement stmtIng = conn.prepareStatement("SELECT * FROM ingredient WHERE id_dish=?");
+        stmtIng.setInt(1, id);
+        ResultSet rsIng = stmtIng.executeQuery();
+        List<Ingredients> ingredients = new ArrayList<>();
+        while (rsIng.next()) {
+            ingredients.add(new Ingredients(
+                    rsIng.getInt("id"),
+                    rsIng.getString("name"),
+                    rsIng.getDouble("price"),
+                    CategoryEnum.valueOf(rsIng.getString("category")),
+                    rsIng.getInt("id_dish")
+            ));
+        }
+        dish.setIngredients(ingredients);
     }
+    return dish;
+}
+
 
     public List<Ingredients> findIngredients(int page, int size) throws SQLException {
         List<Ingredients> ingredients = new ArrayList<>();
