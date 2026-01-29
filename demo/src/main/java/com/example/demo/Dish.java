@@ -9,21 +9,6 @@ public class Dish {
     private Double sellingPrice;
     private List<Ingredients> ingredients;
 
-    public Dish() {}
-
-    public Dish(Integer id, String name, DishType dishType) {
-        this.id = id;
-        this.name = name;
-        this.dishType = dishType;
-    }
-
-    public Dish(Integer id, String name, DishType dishType, List<Ingredients> ingredients) {
-        this.id = id;
-        this.name = name;
-        this.dishType = dishType;
-        this.ingredients = ingredients;
-    }
-
     public Dish(Integer id, String name, DishType dishType, Double sellingPrice) {
         this.id = id;
         this.name = name;
@@ -31,70 +16,25 @@ public class Dish {
         this.sellingPrice = sellingPrice;
     }
 
-    public Dish(Integer id, String name, DishType dishType, List<Ingredients> ingredients, Double sellingPrice) {
-    this.id = id;
-    this.name = name;
-    this.dishType = dishType;
-    this.ingredients = ingredients;
-    this.sellingPrice = sellingPrice;
-}
+    public Dish(Integer id, String name, DishType dishType) {
+        this(id, name, dishType, null);
+    }
 
-
+    // Getters & setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
-    public String getName() { 
-        return name; 
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public void setName(String name) { 
-        this.name = name; 
-    }
+    public DishType getDishType() { return dishType; }
+    public void setDishType(DishType dishType) { this.dishType = dishType; }
 
-    public DishType getDishType() { 
-        return dishType; 
-    }
+    public Double getSellingPrice() { return sellingPrice; }
+    public void setSellingPrice(Double sellingPrice) { this.sellingPrice = sellingPrice; }
 
-    public void setDishType(DishType dishType) { 
-        this.dishType = dishType; 
-    }
-
-    public List<Ingredients> getIngredients() { 
-        return ingredients; 
-    }
-
-    public void setIngredients(List<Ingredients> ingredients) { 
-        this.ingredients = ingredients; 
-    }
-
-    public Double getDishCost() {
-    if (ingredients == null || ingredients.isEmpty()) {
-        return 0.0;
-    }
-    double total = 0.0;
-    for (Ingredients ing : ingredients) {
-        if (ing.getRequiredQuantity() == null) {
-            throw new RuntimeException("Quantité nécessaire inconnue pour l'ingrédient : " + ing.getName());
-        }
-        total += ing.getPrice() * ing.getRequiredQuantity();
-    }
-    return total;
-}
-    public Double getSellingPrice() {
-        return sellingPrice;
-    }
-    public void setSellingPrice(Double sellingPrice) {
-        this.sellingPrice = sellingPrice;
-    }
-
-    public Double getGrossMargin() {
-    if (sellingPrice == null) {
-        throw new RuntimeException("Prix de vente manquant pour le plat : " + name);
-    }
-    return sellingPrice - getDishCost();
-}
-
-
+    public List<Ingredients> getIngredients() { return ingredients; }
+    public void setIngredients(List<Ingredients> ingredients) { this.ingredients = ingredients; }
 
     @Override
     public String toString() {
@@ -102,6 +42,7 @@ public class Dish {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", dishType=" + dishType +
+                ", sellingPrice=" + sellingPrice +
                 ", ingredients=" + ingredients +
                 '}';
     }
