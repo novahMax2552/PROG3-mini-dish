@@ -35,11 +35,6 @@ INSERT INTO dish (name, dish_type, selling_price) VALUES
 ('Salade de tomates', 'START', 9000.00);
 
 INSERT INTO ingredient (name, price, category) VALUES
-('Laitue', 800.00, 'VEGETABLE'),
-('Tomate', 600.00, 'VEGETABLE'),
-('Poulet', 4500.00, 'MEAT'),
-('Chocolat', 3000.00, 'OTHER'),
-('Beurre', 2500.00, 'DAIRY'),
 ('Huile', 2000.00, 'OTHER');
 
 UPDATE dish SET selling_price = 3500.00 WHERE id = 1;
