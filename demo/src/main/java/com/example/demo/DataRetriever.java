@@ -481,5 +481,46 @@ private List<DishOrder> findDishOrdersByOrderId(int orderId, Connection conn) th
     return dishOrders;
 }
 
+public Sale createSaleFrom(Order order) throws SQLException {
+    if (order.getPaymentStatus() != PaymentStatusEnum.PAID) {
+        throw new RuntimeException("Impossible de créer une vente : la commande n’est pas payée.");
+    }
+
+    if (order.getSale() != null) {
+        throw new RuntimeException("Cette commande est déjà associée à une vente.");
+    }
+
+    try (Connection conn = DBConnection.getDBConnection()) {
+        conn.setAutoCommit(false);
+        try {
+            String insertSale = "INSERT INTO sale(creation_datetime) VALUES (?) RETURNING id";
+            int saleId;
+            try (PreparedStatement stmt = conn.prepareStatement(insertSale)) {
+                stmt.setTimestamp(1, Timestamp.from(Instant.now()));
+                try (ResultSet rs = stmt.executeQuery()) {
+                    rs.next();
+                    saleId = rs.getInt("id");
+                }
+            }
+
+            String updateOrder = "UPDATE orders SET id_sale = ? WHERE id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(updateOrder)) {
+                stmt.setInt(1, saleId);
+                stmt.setInt(2, order.getId());
+                stmt.executeUpdate();
+            }
+
+            conn.commit();
+            return new Sale(saleId, Instant.now());
+        } catch (Exception e) {
+            conn.rollback();
+            throw e;
+        } finally {
+            conn.setAutoCommit(true);
+        }
+    }
+}
+
+
 }
 

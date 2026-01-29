@@ -46,5 +46,17 @@ CREATE TABLE dish_order (
 -- Index pour accélérer la recherche par référence
 CREATE UNIQUE INDEX idx_orders_reference ON orders(reference);
 
+CREATE TYPE payment_status AS ENUM ('UNPAID', 'PAID');
+
+ALTER TABLE orders
+ADD COLUMN status payment_status NOT NULL DEFAULT 'UNPAID';
+
+ALTER TABLE orders
+ADD COLUMN id_sale INT UNIQUE;
+
+CREATE TABLE sale (
+    id SERIAL PRIMARY KEY,
+    creation_datetime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
 
 
