@@ -30,13 +30,15 @@ public class Dish {
         this.dishType = dishType;
         this.sellingPrice = sellingPrice;
     }
-    public Dish(Integer id, String name, DishType dishType, List<Ingredients> ingredients, double sellingPrice) {
-        this.id = id;
-        this.name = name;
-        this.dishType = dishType;
-        this.ingredients = ingredients;
-        this.sellingPrice = sellingPrice;
-    }
+
+    public Dish(Integer id, String name, DishType dishType, List<Ingredients> ingredients, Double sellingPrice) {
+    this.id = id;
+    this.name = name;
+    this.dishType = dishType;
+    this.ingredients = ingredients;
+    this.sellingPrice = sellingPrice;
+}
+
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
