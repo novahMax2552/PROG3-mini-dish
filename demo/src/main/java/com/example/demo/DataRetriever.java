@@ -523,4 +523,3 @@ public Sale createSaleFrom(Order order) throws SQLException {
 
 
 }
-
