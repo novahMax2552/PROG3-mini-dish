@@ -331,27 +331,27 @@ public List<Ingredients> createIngredients(List<Ingredients> newIngredients) {
         return toSave;
     }
 
-    // Calcul du stock à une date donnée
-    public StockValue getStockValueAt(int ingredientId, Instant instant) throws SQLException {
-        double total = 0.0;
-        UnitType unit = UnitType.KG; // par défaut
+public StockValue getStockValueAt(int ingredientId, Instant instant) throws SQLException {
+    String query = "SELECT unit, SUM(CASE WHEN type = 'OUT' THEN -quantity ELSE quantity END) AS actual_quantity " +
+                   "FROM stock_movement " +
+                   "WHERE id_ingredient = ? AND creation_datetime <= ? " +
+                   "GROUP BY unit";
 
-        String query = "SELECT quantity, type, unit FROM stock_movement WHERE id_ingredient = ? AND creation_datetime <= ?";
-        try (Connection conn = DBConnection.getDBConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, ingredientId);
-            stmt.setTimestamp(2, Timestamp.from(instant));
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                double qty = rs.getDouble("quantity");
-                MovementTypeEnum type = MovementTypeEnum.valueOf(rs.getString("type"));
-                unit = UnitType.valueOf(rs.getString("unit"));
-                total += type == MovementTypeEnum.IN ? qty : -qty;
-            }
+    try (Connection conn = DBConnection.getDBConnection();
+         PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setInt(1, ingredientId);
+        stmt.setTimestamp(2, Timestamp.from(instant));
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            double total = rs.getDouble("actual_quantity");
+            UnitType unit = UnitType.valueOf(rs.getString("unit"));
+            return new StockValue(total, unit);
         }
-
-        return new StockValue(total, unit);
     }
+    return new StockValue(0.0, UnitType.KG); // valeur par défaut si rien trouvé
+}
+
 
     // Récupérer tous les mouvements d’un ingrédient
     public List<StockMovement> findStockMovementsByIngredient(int ingredientId) throws SQLException {
