@@ -7,6 +7,8 @@ DROP COLUMN IF EXISTS id_dish;
 ALTER TABLE ingredient
 ADD CONSTRAINT uq_ingredient_name UNIQUE (name);
 
+CREATE TYPE IF NOT EXISTS payment_status AS ENUM ('UNPAID', 'PAID');
+
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'unit_type') THEN
@@ -26,12 +28,15 @@ CREATE TABLE IF NOT EXISTS dish_ingredient (
     CONSTRAINT uq_dish_ingredient UNIQUE (id_dish, id_ingredient)
 );
 
+DROP TABLE IF EXISTS orders;
+
 CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
     reference VARCHAR(20) UNIQUE NOT NULL,
     creation_datetime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    total_ht NUMERIC(12,2) NOT NULL,
-    total_ttc NUMERIC(12,2) NOT NULL
+    payment_status payment_status NOT NULL DEFAULT 'UNPAID',
+    id_sale INT UNIQUE,
+    CONSTRAINT fk_sale FOREIGN KEY (id_sale) REFERENCES sale(id) ON DELETE SET NULL
 );
 
 CREATE TABLE dish_order (
@@ -56,4 +61,4 @@ CREATE TABLE sale (
     creation_datetime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-
+DELETE from dish_order;

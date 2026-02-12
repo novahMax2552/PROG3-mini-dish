@@ -53,3 +53,10 @@ INSERT INTO stock_movement (id_ingredient, quantity, type, unit, creation_dateti
 (4, 0.3, 'OUT', 'KG', '2024-01-06 12:00'),
 (5, 2.5, 'IN', 'KG', '2024-01-05 10:00'),
 (5, 0.2, 'OUT', 'KG', '2024-01-06 12:00');
+
+INSERT INTO sale (id, creation_datetime) VALUES
+(1, '2024-02-01 14:30');
+
+INSERT INTO orders (id, reference, payment_status, id_sale) VALUES
+(1, 'ORD00201', 'PAID', 1),
+(2, 'ORD00202', 'UNPAID', NULL);

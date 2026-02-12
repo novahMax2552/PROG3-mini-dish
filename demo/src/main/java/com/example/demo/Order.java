@@ -30,22 +30,22 @@ public class Order {
         this.dishOrders = dishOrders;
     }
 
-    public PaymentStatusEnum getPaymentStatus() { return paymentStatus; }
-    public void setPaymentStatus(PaymentStatusEnum paymentStatus) { this.paymentStatus = paymentStatus; }
+public PaymentStatusEnum getPaymentStatus() { return paymentStatus; }
+public void setPaymentStatus(PaymentStatusEnum paymentStatus) { this.paymentStatus = paymentStatus; }
 
-    public Sale getSale() { return sale; }
-    public void setSale(Sale sale) { this.sale = sale; }
+public Sale getSale() { return sale; }
+public void setSale(Sale sale) { this.sale = sale; }
 
-    public Order(Integer id, String reference, Instant creationDatetime, Double totalHT, Double totalTTC, List<DishOrder> dishOrders, PaymentStatusEnum paymentStatus, Sale sale) {
-        this.id = id;
-        this.reference = reference;
-        this.creationDatetime = creationDatetime;
-        this.totalHT = totalHT;
-        this.totalTTC = totalTTC;
-        this.dishOrders = dishOrders;
-        this.paymentStatus = paymentStatus;
-        this.sale = sale;
-    }
+public Order(Integer id, String reference, Instant creationDatetime, Double totalHT, Double totalTTC, List<DishOrder> dishOrders, PaymentStatusEnum paymentStatus, Sale sale) {
+    this.id = id;
+    this.reference = reference;
+    this.creationDatetime = creationDatetime;
+    this.totalHT = totalHT;
+    this.totalTTC = totalTTC;
+    this.dishOrders = dishOrders;
+    this.paymentStatus = paymentStatus;
+    this.sale = sale;
+}
 
 
     public Integer getId() { return id; }
