@@ -10,8 +10,6 @@ public class DataRetriever {
         // constructeur vide
     }
 
-    // ------------------- DISH -------------------
-
     public Dish findDishById(int id) throws SQLException {
         Dish dish = null;
         try (Connection conn = DBConnection.getDBConnection()) {
