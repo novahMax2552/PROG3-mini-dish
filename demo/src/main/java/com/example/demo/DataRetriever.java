@@ -349,11 +349,9 @@ public StockValue getStockValueAt(int ingredientId, Instant instant) throws SQLE
             return new StockValue(total, unit);
         }
     }
-    return new StockValue(0.0, UnitType.KG); // valeur par défaut si rien trouvé
+    return new StockValue(0.0, UnitType.KG);
 }
 
-
-    // Récupérer tous les mouvements d’un ingrédient
     public List<StockMovement> findStockMovementsByIngredient(int ingredientId) throws SQLException {
         List<StockMovement> movements = new ArrayList<>();
         String query = "SELECT id, quantity, type, unit, creation_datetime FROM stock_movement WHERE id_ingredient = ?";
