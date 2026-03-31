@@ -1,7 +1,5 @@
 package com.example.demo.entity;
 
-import com.example.demo.CategoryEnum;
-
 public class Ingredients {
     private Integer id;
     private String name;
@@ -15,7 +13,7 @@ public class Ingredients {
         this.category = category;
     }
 
-    public Ingredients(Object id2, String name2, double price2, CategoryEnum vegetable) {
+    public Ingredients(Object id2, String name2, double price2, IngredientCategoryEnum vegetable) {
         //TODO Auto-generated constructor stub
     }
 
