@@ -1,4 +1,6 @@
-package com.example.demo;
+package com.example.demo.entity;
+
+import com.example.demo.CategoryEnum;
 
 public class Ingredients {
     private Integer id;

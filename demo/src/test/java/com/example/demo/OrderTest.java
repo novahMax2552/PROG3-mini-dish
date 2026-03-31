@@ -1,6 +1,9 @@
 package com.example.demo;
 
 import org.junit.jupiter.api.Test;
+
+import com.example.demo.entity.Dish;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.SQLException;

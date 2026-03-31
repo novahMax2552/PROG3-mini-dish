@@ -4,6 +4,9 @@ import java.sql.*;
 import java.time.Instant;
 import java.util.*;
 
+import com.example.demo.entity.Dish;
+import com.example.demo.entity.Ingredients;
+
 public class DataRetriever {
 
     public DataRetriever() {

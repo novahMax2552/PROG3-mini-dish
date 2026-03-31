@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import com.example.demo.entity.Dish;
+
 public class DishOrder {
     private Integer id;
     private Dish dish;

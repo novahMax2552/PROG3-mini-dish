@@ -1,6 +1,10 @@
 package com.example.demo;
 
 import org.junit.jupiter.api.Test;
+
+import com.example.demo.entity.Dish;
+import com.example.demo.entity.Ingredients;
+
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.Arrays;
 
