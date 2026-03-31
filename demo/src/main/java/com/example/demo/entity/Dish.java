@@ -31,19 +31,15 @@ public class Dish {
         this(id, name, dishType, null, null);
     }
 
-    public Dish() {
-        //TODO Auto-generated constructor stub
-    }
-
-    public Dish(int id2, String name2, DishType start, List<Ingredients> asList, double sellingPrice2) {
+	public Dish() {
         //TODO Auto-generated constructor stub
     }
 
     public Dish(int id2, String name2, DishTypeEnum main, List<Ingredients> asList, Object sellingPrice2) {
-		//TODO Auto-generated constructor stub
-	}
+        //TODO Auto-generated constructor stub
+    }
 
-	public Integer getId() { return id; }
+    public Integer getId() { return id; }
     public void setId1(long id) { this.id = (int) id; }
 
     public String getName() { return name; }

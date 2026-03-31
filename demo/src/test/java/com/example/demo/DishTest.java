@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.example.demo.entity.Dish;
 import com.example.demo.entity.DishTypeEnum;
+import com.example.demo.entity.IngredientCategoryEnum;
 import com.example.demo.entity.Ingredients;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,8 +14,8 @@ public class DishTest {
 
     @Test
     public void testGetDishCost_SaladeFraiche() {
-        Ingredients laitue = new Ingredients(null, "Laitue", 800.0, CategoryEnum.VEGETABLE);
-        Ingredients tomate = new Ingredients(null, "Tomate", 600.0, CategoryEnum.VEGETABLE);
+        Ingredients laitue = new Ingredients(null, "Laitue", 800.0, IngredientCategoryEnum.VEGETABLE);
+        Ingredients tomate = new Ingredients(null, "Tomate", 600.0, IngredientCategoryEnum.VEGETABLE);
 
         Dish saladeFraiche = new Dish(1, "Salade fraîche", DishType.START,
                 Arrays.asList(laitue, tomate), 3500.00);
@@ -26,7 +27,7 @@ public class DishTest {
 
     @Test
     public void testGetDishCost_PouletGrille() {
-        Ingredients poulet = new Ingredients(null, "Poulet", 4500.0, CategoryEnum.ANIMAL);
+        Ingredients poulet = new Ingredients(null, "Poulet", 4500.0, IngredientCategoryEnum.MEAT);
 
         Dish pouletGrille = new Dish(2, "Poulet grillé", DishType.MAIN,
                 Arrays.asList(poulet), 12000.00);
@@ -46,10 +47,10 @@ public class DishTest {
 
     @Test
     public void testGetDishCost_GateauChocolat() {
-        Ingredients chocolat = new Ingredients(null, "Chocolat", 3000.0, CategoryEnum.OTHER);
-        Ingredients beurre = new Ingredients(null, "Beurre", 2500.0, CategoryEnum.DAIRY);
+        Ingredients chocolat = new Ingredients(null, "Chocolat", 3000.0, IngredientCategoryEnum.OTHER);
+        Ingredients beurre = new Ingredients(null, "Beurre", 2500.0, IngredientCategoryEnum.DAIRY);
 
-        Dish gateau = new Dish(4, "Gâteau au chocolat", DishType.DESSERT,
+        Dish gateau = new Dish(4, "Gâteau au chocolat", DishTypeEnum.DESSERT,
                 Arrays.asList(chocolat, beurre), 8000.00);
 
         assertEquals(5500.00, gateau.getDishCost(), 0.01);
