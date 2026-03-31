@@ -17,13 +17,11 @@ public class DishController {
         this.dishService = dishService;
     }
 
-    // GET /dishes
     @GetMapping
     public List<Dish> getAllDishes() {
         return dishService.findAll();
     }
 
-    // GET /dishes/{id}
     @GetMapping("/{id}")
     public ResponseEntity<?> getDishById(@PathVariable Long id) {
         Dish dish = dishService.findDishById(id);
@@ -33,7 +31,6 @@ public class DishController {
         return ResponseEntity.ok(dish);
     }
 
-    // PUT /dishes/{id}/ingredients
     @PutMapping("/{id}/ingredients")
     public ResponseEntity<?> updateDishIngredients(@PathVariable Long id,
                                                    @RequestBody(required = false) List<Ingredients> ingredients) {
