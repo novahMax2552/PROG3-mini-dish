@@ -14,22 +14,11 @@ public class IngredientService {
         this.ingredientRepository = ingredientRepository;
     }
 
+    public Ingredients findById(Long id) {
+        return ingredientRepository.findById(id);
+    }
+
     public List<Ingredients> findIngredients(int page, int size) {
         return ingredientRepository.findAll(page, size);
     }
-
-    public void createIngredients(List<Ingredients> newIngredients) {
-        ingredientRepository.saveAll(newIngredients);
-    }
-
-    public Ingredients findById(Long id) {
-    return ingredientRepository.findById(id);
-}
-
-public Double findStockValue(Long id, String at, String unit) {
-    // Ici tu implémentes la logique JDBC pour récupérer la valeur du stock
-    // Exemple : SELECT value FROM stock WHERE ingredient_id=? AND date=? AND unit=?
-    return ingredientRepository.findStockValue(id, at, unit);
-}
-
 }

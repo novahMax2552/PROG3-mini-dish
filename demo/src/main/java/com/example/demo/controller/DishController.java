@@ -3,7 +3,6 @@ package com.example.demo.controller;
 import com.example.demo.entity.Dish;
 import com.example.demo.entity.Ingredients;
 import com.example.demo.service.DishService;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,30 +17,26 @@ public class DishController {
         this.dishService = dishService;
     }
 
-    // d) GET /dishes
+    // GET /dishes
     @GetMapping
-    public List<Dish> getAllDishes1() {
+    public List<Dish> getAllDishes() {
         return dishService.findAll();
     }
 
+    // GET /dishes/{id}
     @GetMapping("/{id}")
-    public Dish getDishById(@PathVariable Long id) {
-        return dishService.findDishById(id);
+    public ResponseEntity<?> getDishById(@PathVariable Long id) {
+        Dish dish = dishService.findDishById(id);
+        if (dish == null) {
+            return ResponseEntity.status(404).body("Dish.id=" + id + " is not found");
+        }
+        return ResponseEntity.ok(dish);
     }
 
-    @PostMapping
-    public void saveDish(@RequestBody Dish dish) {
-        dishService.saveDish(dish);
-    }
-
-    @GetMapping
-public List<Dish> getAllDishes() {
-    return dishService.findAll();
-}
-
+    // PUT /dishes/{id}/ingredients
     @PutMapping("/{id}/ingredients")
     public ResponseEntity<?> updateDishIngredients(@PathVariable Long id,
-                                                @RequestBody(required = false) List<Ingredients> ingredients) {
+                                                   @RequestBody(required = false) List<Ingredients> ingredients) {
         if (ingredients == null || ingredients.isEmpty()) {
             return ResponseEntity.status(400).body("Request body with ingredient list is mandatory.");
         }

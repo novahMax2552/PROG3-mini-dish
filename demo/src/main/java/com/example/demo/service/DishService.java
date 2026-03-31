@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Dish;
+import com.example.demo.entity.Ingredients;
 import com.example.demo.repository.DishRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,5 +21,9 @@ public class DishService {
 
     public List<Dish> findAll() {
         return dishRepository.findAll();
+    }
+
+    public boolean updateIngredients(Long dishId, List<Ingredients> ingredients) {
+        return dishRepository.updateIngredients(dishId, ingredients);
     }
 }

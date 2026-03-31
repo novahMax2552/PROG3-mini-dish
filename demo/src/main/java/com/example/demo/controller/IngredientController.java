@@ -16,10 +16,13 @@ public class IngredientController {
         this.ingredientService = ingredientService;
     }
 
+    // GET /ingredients?page=...&size=...
     @GetMapping
     public List<Ingredients> getIngredients(@RequestParam int page, @RequestParam int size) {
         return ingredientService.findIngredients(page, size);
     }
+
+    // GET /ingredients/{id}
     @GetMapping("/{id}")
     public ResponseEntity<?> getIngredientById(@PathVariable Long id) {
         Ingredients ing = ingredientService.findById(id);
@@ -27,37 +30,5 @@ public class IngredientController {
             return ResponseEntity.status(404).body("Ingredient.id=" + id + " is not found");
         }
         return ResponseEntity.ok(ing);
-    }
-
-    @GetMapping("/{id}/stock")
-    public ResponseEntity<?> getStock(@PathVariable Long id,
-                                      @RequestParam(required = false) String at,
-                                      @RequestParam(required = false) String unit) {
-        if (at == null || unit == null) {
-            return ResponseEntity.status(400).body("Either mandatory query parameter `at` or `unit` is not provided.");
-        }
-
-        Double stockValue = ingredientService.findStockValue(id, at, unit);
-        if (stockValue == null) {
-            return ResponseEntity.status(404).body("Ingredient.id=" + id + " is not found");
-        }
-
-        return ResponseEntity.ok(new StockResponse(unit, stockValue));
-    }
-
-    // POST /ingredients
-    @PostMapping
-    public void createIngredients(@RequestBody List<Ingredients> newIngredients) {
-        ingredientService.createIngredients(newIngredients);
-    }
-
-    static class StockResponse {
-        public String unit;
-        public Double value;
-
-        public StockResponse(String unit, Double value) {
-            this.unit = unit;
-            this.value = value;
-        }
     }
 }

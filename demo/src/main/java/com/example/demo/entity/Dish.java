@@ -7,12 +7,12 @@ import com.example.demo.DishType;
 public class Dish {
     private Integer id;
     private String name;
-    private DishType dishType;
+    private DishTypeEnum dishType;
     private Double sellingPrice;   // ⚡ on garde sellingPrice
     private List<Ingredients> ingredients;
 
     // Constructeur complet
-    public Dish(Integer id, String name, DishType dishType, List<Ingredients> ingredients, Double sellingPrice) {
+    public Dish(Integer id, String name, DishTypeEnum dishType, List<Ingredients> ingredients, Double sellingPrice) {
         this.id = id;
         this.name = name;
         this.dishType = dishType;
@@ -21,17 +21,17 @@ public class Dish {
     }
 
     // Constructeur avec ingrédients mais sans prix
-    public Dish(Integer id, String name, DishType dishType, List<Ingredients> ingredients) {
+    public Dish(Integer id, String name, DishTypeEnum dishType, List<Ingredients> ingredients) {
         this(id, name, dishType, ingredients, null);
     }
 
     // Constructeur avec prix mais sans ingrédients
-    public Dish(Integer id, String name, DishType dishType, Double sellingPrice) {
+    public Dish(Integer id, String name, DishTypeEnum dishType, Double sellingPrice) {
         this(id, name, dishType, null, sellingPrice);
     }
 
     // Constructeur minimal
-    public Dish(Integer id, String name, DishType dishType) {
+    public Dish(Integer id, String name, DishTypeEnum dishType) {
         this(id, name, dishType, null, null);
     }
 
@@ -46,7 +46,7 @@ public class Dish {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public DishType getDishType() { return dishType; }
+    public DishTypeEnum getDishType() { return dishType; }
     public void setDishType(DishTypeEnum dishType) { this.dishType = dishType; }
 
     public Double getSellingPrice() { return sellingPrice; }

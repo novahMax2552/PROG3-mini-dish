@@ -37,3 +37,14 @@ CREATE TABLE stock (
     FOREIGN KEY (ingredient_id) REFERENCES ingredient(id) ON DELETE CASCADE
 );
 
+CREATE TABLE stock_movement (
+    id SERIAL PRIMARY KEY,
+    ingredient_id INT NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    unit VARCHAR(10) NOT NULL,
+    value NUMERIC(10,2) NOT NULL,
+    type VARCHAR(10) NOT NULL, -- ENTRY ou EXIT
+    FOREIGN KEY (ingredient_id) REFERENCES ingredient(id) ON DELETE CASCADE
+);
+
+

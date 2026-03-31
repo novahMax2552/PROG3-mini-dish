@@ -39,6 +39,11 @@ public class DishRepository {
         return null;
     }
 
+    private List<Ingredients> loadIngredients(Connection conn, Long id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'loadIngredients'");
+    }
+
     private List<Ingredients> loadIngredients(Connection conn, Integer id) throws SQLException {
         List<Ingredients> ingredients = new ArrayList<>();
         PreparedStatement ps = conn.prepareStatement(
@@ -75,4 +80,39 @@ public class DishRepository {
         }
         return dishes;
     }
+
+    public boolean updateIngredients(Long dishId, List<Ingredients> ingredients) {
+    try (Connection conn = DriverManager.getConnection(url, username, password)) {
+        // Vérifier si le plat existe
+        PreparedStatement check = conn.prepareStatement("SELECT COUNT(*) FROM dish WHERE id=?");
+        check.setLong(1, dishId);
+        ResultSet rs = check.executeQuery();
+        if (rs.next() && rs.getInt(1) == 0) {
+            return false; // plat non trouvé
+        }
+
+        // Supprimer les anciennes associations
+        PreparedStatement delete = conn.prepareStatement("DELETE FROM dish_ingredient WHERE dish_id=?");
+        delete.setLong(1, dishId);
+        delete.executeUpdate();
+
+        // Associer uniquement les ingrédients existants
+        for (Ingredients ing : ingredients) {
+            PreparedStatement checkIng = conn.prepareStatement("SELECT COUNT(*) FROM ingredient WHERE id=?");
+            checkIng.setLong(1, ing.getId());
+            ResultSet rsIng = checkIng.executeQuery();
+            if (rsIng.next() && rsIng.getInt(1) > 0) {
+                PreparedStatement insert = conn.prepareStatement(
+                        "INSERT INTO dish_ingredient(dish_id, ingredient_id) VALUES (?, ?)");
+                insert.setLong(1, dishId);
+                insert.setLong(2, ing.getId());
+                insert.executeUpdate();
+            }
+        }
+        return true;
+    } catch (SQLException e) {
+        throw new RuntimeException(e);
+    }
+}
+
 }
