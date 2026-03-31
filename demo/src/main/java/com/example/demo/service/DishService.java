@@ -1,12 +1,10 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Dish;
-import com.example.demo.entity.Ingredients;
 import com.example.demo.repository.DishRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-import org.springframework.stereotype.Service;
 
 @Service
 public class DishService {
@@ -20,16 +18,7 @@ public class DishService {
         return dishRepository.findById(id);
     }
 
-    public void saveDish(Dish dish) {
-        dishRepository.save(dish);
-    }
-
     public List<Dish> findAll() {
-    return dishRepository.findAll();
-}
-
-    public boolean updateIngredients(Long dishId, List<Ingredients> ingredients) {
-        return dishRepository.updateIngredients(dishId, ingredients);
+        return dishRepository.findAll();
     }
-
 }

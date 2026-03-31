@@ -6,9 +6,9 @@ public class Ingredients {
     private Integer id;
     private String name;
     private Double price;
-    private CategoryEnum category;
+    private IngredientCategoryEnum category;
 
-    public Ingredients(Integer id, String name, Double price, CategoryEnum category) {
+    public Ingredients(Integer id, String name, Double price, IngredientCategoryEnum category) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -19,8 +19,8 @@ public class Ingredients {
         return id;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setId(long id) {
+        this.id = (int) id;
     }
 
     public String getName() {
@@ -39,11 +39,11 @@ public class Ingredients {
         this.price = price;
     }
 
-    public CategoryEnum getCategory() {
+    public IngredientCategoryEnum getCategory() {
         return category;
     }
 
-    public void setCategory(CategoryEnum category) {
+    public void setCategory(IngredientCategoryEnum category) {
         this.category = category;
     }
 

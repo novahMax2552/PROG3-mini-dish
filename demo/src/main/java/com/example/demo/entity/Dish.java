@@ -35,15 +35,19 @@ public class Dish {
         this(id, name, dishType, null, null);
     }
 
+    public Dish() {
+        //TODO Auto-generated constructor stub
+    }
+
     // Getters & setters
     public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
+    public void setId1(long id) { this.id = (int) id; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
     public DishType getDishType() { return dishType; }
-    public void setDishType(DishType dishType) { this.dishType = dishType; }
+    public void setDishType(DishTypeEnum dishType) { this.dishType = dishType; }
 
     public Double getSellingPrice() { return sellingPrice; }
     public void setSellingPrice(Double sellingPrice) { this.sellingPrice = sellingPrice; }
@@ -79,5 +83,10 @@ public class Dish {
                 ", sellingPrice=" + sellingPrice +
                 ", ingredients=" + ingredients +
                 '}';
+    }
+
+    public void setId(long long1) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setId'");
     }
 }
