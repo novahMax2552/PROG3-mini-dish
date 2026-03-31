@@ -3,6 +3,7 @@ package com.example.demo;
 import org.junit.jupiter.api.Test;
 
 import com.example.demo.entity.Dish;
+import com.example.demo.entity.DishTypeEnum;
 import com.example.demo.entity.Ingredients;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,7 +37,7 @@ public class DishTest {
 
     @Test
     public void testGetDishCost_RizAuxLegumes() {
-        Dish riz = new Dish(3, "Riz aux légumes", DishType.MAIN,
+        Dish riz = new Dish(3, "Riz aux légumes", DishTypeEnum.MAIN,
             Arrays.asList(), null); // prix de vente NULL
 
         assertEquals(0.00, riz.getDishCost(), 0.01);
@@ -57,7 +58,7 @@ public class DishTest {
 
     @Test
     public void testGetDishCost_SaladeFruits() {
-        Dish saladeFruits = new Dish(5, "Salade de fruits", DishType.DESSERT,
+        Dish saladeFruits = new Dish(5, "Salade de fruits", DishTypeEnum.DESSERT,
                 Arrays.asList(), null);
 
         assertEquals(0.00, saladeFruits.getDishCost(), 0.01);

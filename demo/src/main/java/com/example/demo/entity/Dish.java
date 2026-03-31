@@ -8,29 +8,25 @@ public class Dish {
     private Integer id;
     private String name;
     private DishTypeEnum dishType;
-    private Double sellingPrice;   // ⚡ on garde sellingPrice
+    private Double sellingPrice;
     private List<Ingredients> ingredients;
 
-    // Constructeur complet
-    public Dish(Integer id, String name, DishTypeEnum dishType, List<Ingredients> ingredients, Double sellingPrice) {
+    public Dish(Integer id, String name, DishTypeEnum main, List<Ingredients> ingredients, Double sellingPrice) {
         this.id = id;
         this.name = name;
-        this.dishType = dishType;
+        this.dishType = main;
         this.ingredients = ingredients;
         this.sellingPrice = sellingPrice;
     }
 
-    // Constructeur avec ingrédients mais sans prix
     public Dish(Integer id, String name, DishTypeEnum dishType, List<Ingredients> ingredients) {
         this(id, name, dishType, ingredients, null);
     }
 
-    // Constructeur avec prix mais sans ingrédients
     public Dish(Integer id, String name, DishTypeEnum dishType, Double sellingPrice) {
         this(id, name, dishType, null, sellingPrice);
     }
 
-    // Constructeur minimal
     public Dish(Integer id, String name, DishTypeEnum dishType) {
         this(id, name, dishType, null, null);
     }
@@ -39,8 +35,15 @@ public class Dish {
         //TODO Auto-generated constructor stub
     }
 
-    // Getters & setters
-    public Integer getId() { return id; }
+    public Dish(int id2, String name2, DishType start, List<Ingredients> asList, double sellingPrice2) {
+        //TODO Auto-generated constructor stub
+    }
+
+    public Dish(int id2, String name2, DishTypeEnum main, List<Ingredients> asList, Object sellingPrice2) {
+		//TODO Auto-generated constructor stub
+	}
+
+	public Integer getId() { return id; }
     public void setId1(long id) { this.id = (int) id; }
 
     public String getName() { return name; }
@@ -55,7 +58,6 @@ public class Dish {
     public List<Ingredients> getIngredients() { return ingredients; }
     public void setIngredients(List<Ingredients> ingredients) { this.ingredients = ingredients; }
 
-    // Calcul du coût du plat (simplifié : somme des prix des ingrédients)
     public double getDishCost() {
         double total = 0.0;
         if (ingredients != null) {
@@ -66,7 +68,6 @@ public class Dish {
         return total;
     }
 
-    // Calcul de la marge brute
     public double getGrossMargin() {
         if (sellingPrice == null) {
             throw new RuntimeException("Prix de vente non défini");

@@ -15,6 +15,10 @@ public class Ingredients {
         this.category = category;
     }
 
+    public Ingredients(Object id2, String name2, double price2, CategoryEnum vegetable) {
+        //TODO Auto-generated constructor stub
+    }
+
     public Integer getId() {
         return id;
     }
