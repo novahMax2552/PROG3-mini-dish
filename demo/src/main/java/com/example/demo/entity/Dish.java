@@ -11,10 +11,10 @@ public class Dish {
     private Double sellingPrice;
     private List<Ingredients> ingredients;
 
-    public Dish(Integer id, String name, DishTypeEnum main, List<Ingredients> ingredients, Double sellingPrice) {
+    public Dish(Integer id, String name, DishTypeEnum start, List<Ingredients> ingredients, Double sellingPrice) {
         this.id = id;
         this.name = name;
-        this.dishType = main;
+        this.dishType = start;
         this.ingredients = ingredients;
         this.sellingPrice = sellingPrice;
     }
@@ -36,6 +36,10 @@ public class Dish {
     }
 
     public Dish(int id2, String name2, DishTypeEnum main, List<Ingredients> asList, Object sellingPrice2) {
+        //TODO Auto-generated constructor stub
+    }
+
+    public Dish(int id2, String name2, DishType main, List<Ingredients> asList, double sellingPrice2) {
         //TODO Auto-generated constructor stub
     }
 
