@@ -1,0 +1,256 @@
+openapi: 3.0.3
+info:
+  title: Mini Dish API
+  version: 1.0.0
+  description: REST API for managing ingredients, dishes, and stock movements
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /ingredients:
+    get:
+      summary: Get a paginated list of ingredients
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: size
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of ingredients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ingredient'
+
+  /ingredients/{id}:
+    get:
+      summary: Get ingredient by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Ingredient found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ingredient'
+        '404':
+          description: Ingredient not found
+
+  /ingredients/{id}/stock:
+    get:
+      summary: Get stock value of an ingredient
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: at
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: unit
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [PCS, KG, L]
+      responses:
+        '200':
+          description: Stock value retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stock'
+        '400':
+          description: Missing query parameters
+        '404':
+          description: Ingredient not found
+
+  /dishes:
+    get:
+      summary: Get all dishes
+      responses:
+        '200':
+          description: List of dishes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Dish'
+
+  /dishes/{id}/ingredients:
+    put:
+      summary: Update ingredients associated with a dish
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Ingredient'
+      responses:
+        '200':
+          description: Ingredients updated successfully
+        '400':
+          description: Request body missing
+        '404':
+          description: Dish not found
+
+  /ingredients/{id}/stockMovements:
+    get:
+      summary: Get stock movements for an ingredient within a date range
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: List of stock movements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StockMovement'
+        '404':
+          description: Ingredient not found
+
+    post:
+      summary: Add new stock movements to an ingredient
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/StockMovementCreate'
+      responses:
+        '200':
+          description: Stock movements created successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StockMovement'
+        '400':
+          description: Request body missing
+        '404':
+          description: Ingredient not found
+
+components:
+  schemas:
+    Ingredient:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        category:
+          type: string
+        price:
+          type: number
+          format: double
+
+    Stock:
+      type: object
+      properties:
+        unit:
+          type: string
+        value:
+          type: number
+          format: double
+
+    Dish:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        dishType:
+          type: string
+        salePrice:
+          type: number
+          format: double
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ingredient'
+
+    StockMovement:
+      type: object
+      properties:
+        id:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        unit:
+          type: string
+        value:
+          type: number
+          format: double
+        type:
+          type: string
+          enum: [ENTRY, EXIT]
+
+    StockMovementCreate:
+      type: object
+      properties:
+        unit:
+          type: string
+        value:
+          type: number
+          format: double
+        type:
+          type: string
+          enum: [ENTRY, EXIT]
